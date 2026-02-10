@@ -17,3 +17,6 @@ node_modules/
 # 个人测试文件
 test/
 *.log
+
+# Chrome二进制文件夹
+_metadata/
