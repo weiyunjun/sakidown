@@ -108,7 +108,7 @@ SakiDown采用了策略优先的设计哲学，这可能不符合每次下载手
 SakiDown的开发工作，是出于对二创社区的爱，一时冲动下开启的。如果没有以下存在，SakiDown完全没机会坚持到开源的这一天：
 - **哔哩哔哩It's MyGO!!!!! & Ave Mujica二创社区**：谢谢你们带给我的美好回忆。对所有二创作者，致以最深，最深的敬意。
 - [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect/)：谢谢你提供的API的详细文档，没有它，我会无从下手。
-- [gpac](https://github.com/gpac/gpac/)：虽然代码部分无法提供直接参考，但在开发初期，`mp4box -info`在测试和验证DASH流合并算法时提供了巨大的帮助。
+- [mp4box](https://github.com/gpac/mp4box.js/)：虽然代码部分无法提供直接参考，但在开发初期，`mp4box -info`在测试和验证DASH流合并算法时提供了巨大的帮助。
 - [hakadao](https://github.com/hakadao/)：感谢你的bewlybewly插件，从你这里我知道了It'MyGO!!!!!这部作品。你的遭遇，让我鼓起勇气真正去在乎我爱的人。
 - 我的家人和Steam家庭组的朋友。谢谢你们包容我像疯子一样的开发状态，还有...让我白嫖游戏。
 
