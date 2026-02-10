@@ -1,6 +1,6 @@
 ![SakiDown_Banner](./assets/SakiDown_Banner.png)
-![Version](https://img.shields.io/badge/version-v0.1.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Chrome](https://img.shields.io/badge/Chrome-Manifest_V3-yellow)
 
+![Version](https://img.shields.io/badge/version-v0.1.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Chrome](https://img.shields.io/badge/Chrome-Manifest_V3-yellow)
 **SakiDown**是一个基于Chrome Manifest V3标准的哔哩哔哩视频下载和管理插件。
 1. **流式合并算法**：采用原生JavaScript实现了DASH音视频流的解封装与无损合并，配合OPFS存储技术，解决了ffmpeg.wasm在合并大文件时遇到的内存墙问题。
 2. **透明隐私保护**：SakiDown承诺不收集任何用户数据，除Bilibili官方接口外无任何网络请求。代码完全开源且未混淆，逻辑清晰透明。用户可随时查阅或使用AI工具辅助审计源代码，确保数据安全。
