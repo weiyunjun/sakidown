@@ -1,0 +1,60 @@
+<!--
+* @file popup/popup.html
+* @description 浏览器扩展弹窗入口 (Browser Extension Popup Entry)
+* * 核心职责 (Core Responsibilities):
+* 1. 快速导航 (Quick Navigation):
+* * 提供扩展的核心功能入口：一键触发批量下载 (`btn-download`)、打开任务管理 (`btn-manager`)、打开设置 (`btn-settings`)。
+* * 界面极其精简 (280px 宽度)，专注于高频操作的快速分发。
+* * 2. 主题适配 (Theme Adaptation):
+* * 引入 `theme.css` 并配合 `popup.js` 读取用户配置，确保弹窗颜色 (Primary Color) 与主程序保持一致。
+* * 3. 样式隔离 (Style Isolation):
+* * 使用 `overflow: hidden` 防止滚动条出现，确保在浏览器 Popup 容器内的视觉整洁性。
+* * @author weiyunjun
+* @version v0.1.0
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SakiDown</title>
+    <link rel="stylesheet" href="../ui/theme.css">
+    <link rel="stylesheet" href="../ui/components.css">
+    <link rel="stylesheet" href="../ui/layouts.css">
+    <style>
+        body { 
+            margin: 0; padding: 0; width: 280px; overflow: hidden; 
+            background: hsl(var(--background)); 
+        }
+    </style>
+</head>
+<body>
+    <div class="ud-popup-container">
+        <!-- 头部 -->
+        <div class="ud-popup-header">
+            <span class="ud-popup-title">SakiDown</span>
+            <span class="ud-popup-version">v0.1.0</span>
+        </div>
+
+        <!-- 菜单列表 -->
+        <div id="btn-download" class="ud-popup-item">
+            <div class="ud-popup-icon"></div>
+            <span>下载视频</span>
+        </div>
+
+        <div id="btn-manager" class="ud-popup-item">
+            <div class="ud-popup-icon"></div>
+            <span>任务管理</span>
+        </div>
+
+        <div id="btn-settings" class="ud-popup-item">
+            <div class="ud-popup-icon"></div>
+            <span>设置</span>
+        </div>
+    </div>
+
+    <script src="../ui/dom-utils.js"></script>
+    <script src="../settings/theme.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>

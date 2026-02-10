@@ -1,0 +1,100 @@
+{
+  "manifest_version": 3,
+  "name": "SakiDown",
+  "version": "0.1.0",
+  "description": "一个基于Chrome Manifest V3标准的哔哩哔哩视频下载和管理插件",
+  "icons": {
+    "16": "assets/icon.png",
+    "48": "assets/icon.png",
+    "128": "assets/icon.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "下载选项"
+  },
+  "permissions": [
+    "scripting",
+    "activeTab",
+    "declarativeNetRequest",
+    "downloads",
+    "downloads.open",
+    "downloads.shelf",
+    "offscreen",
+    "unlimitedStorage",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/main.js",
+    "type": "module"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "comment": "--- UI Bridge (通用) ---",
+      "matches": ["*://*.bilibili.com/*"],
+      "js": [
+        "ui/dom-utils.js",
+        "ui/base-modal.js",
+        "ui/confirm-modal.js",
+        "ui/ui-manager.js",
+        "settings/strategies.js",
+        "settings/settings-modal.js",
+        "settings/theme.js",
+        "content-script.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "streams/*",
+        "background/offscreen.html",
+        "core/io-worker.js",
+        "assets/default.wav"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "resources": [
+        "adapters/bilibili.js"
+      ],
+      "matches": [
+        "*://*.bilibili.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "ui/theme.css",
+        "ui/components.css",
+        "ui/layouts.css",
+        "ui/dom-utils.js",
+        "ui/base-modal.js",
+        "ui/confirm-modal.js",
+        "ui/ui-manager.js",
+        "settings/settings-modal.js",
+        "settings/settings-frame.html",
+        "settings/settings-main.js",
+        "ui/download-frame.html",
+        "ui/download-main.js",
+        "ui/batch-modal.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

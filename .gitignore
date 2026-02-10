@@ -1,0 +1,19 @@
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 编辑器配置
+.idea/
+.vscode/
+*.swp
+
+# Chrome扩展打包密钥
+*.pem
+*.crx
+
+# Node.js
+node_modules/
+
+# 个人测试文件
+test/
+*.log

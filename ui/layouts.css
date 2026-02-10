@@ -1,0 +1,944 @@
+/* --- ui/layouts.css --- */
+/* =================================================================
+   1. 基础模态框布局 (Base Modal Layout)
+   ================================================================= */
+/* 遮罩层 */
+.ud-modal-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-mask);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.ud-modal-mask.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Body 滚动锁定类 (配合 BaseModal JS 使用) */
+.ud-body-noscroll {
+    overflow: hidden !important;
+}
+
+/* 弹窗容器 */
+.ud-modal-container {
+    width: 440px;
+    background: var(--background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    flex-shrink: 0;
+}
+
+.ud-modal-mask.show .ud-modal-container {
+    transform: scale(1) translateY(0);
+}
+
+/* 弹窗头部 */
+.ud-modal-header {
+    padding: 16px 20px;
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.ud-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+/* 弹窗内容区 */
+.ud-modal-body {
+    padding: 0px 20px;
+    overflow-y: auto;
+    flex: 1;
+    overscroll-behavior: contain;
+}
+
+/* 弹窗底部操作区 */
+.ud-modal-footer {
+    padding: 12px 20px;
+    border-top: none;
+    background: var(--background);
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* 模态框底部占位符 (替代 style="flex:1") */
+.ud-modal-spacer {
+    flex: 1;
+}
+
+/* =================================================================
+   2. 标签页组件布局 (Tabs Layout)
+   ================================================================= */
+.ud-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    padding: 0 20px;
+}
+
+.ud-tab-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    color: var(--muted-foreground);
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.ud-tab-item:hover {
+    color: var(--foreground);
+}
+
+.ud-tab-item.active {
+    color: var(--foreground);
+    border-bottom-color: var(--primary);
+}
+
+/* =================================================================
+   3. 批量下载相关布局 (Batch Layout)
+   ================================================================= */
+/* 批量列表容器 */
+.ud-batch-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+/* 列表项 */
+.ud-batch-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    background: var(--background);
+}
+
+.ud-batch-item:hover {
+    background: var(--accent);
+}
+
+.ud-batch-item.active {
+    background: var(--secondary);
+}
+
+/* 底部全选/操作条 */
+.ud-batch-options-bar {
+    background: var(--muted);
+    padding: 10px 16px;
+    display: flex;
+    gap: 16px;
+    border-top: 1px solid var(--border);
+}
+
+/* --- 批量分组 Tabs (胶囊风格) --- */
+.ud-batch-tabs-container {
+    padding: 12px 16px 4px 16px;
+    background: var(--background);
+    border-bottom: 1px solid transparent;
+}
+
+.ud-batch-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+}
+
+.ud-batch-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.ud-batch-tab-item {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 16px;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    border: none;
+}
+
+.ud-batch-tab-item:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.ud-batch-tab-item.active {
+    background: var(--secondary);
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+/* 批量弹窗内容容器 (替代 JS style.cssText) */
+.ud-batch-body {
+    padding: 0 20px 10px 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: height 0.2s ease;
+}
+
+/* 批量表格 Grid 定义 (替代 JS style.gridTemplateColumns) */
+.ud-batch-grid {
+    display: grid !important;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 正：确保 grid 与通用 table 样式兼容 */
+.ud-batch-grid.ud-table-header {
+    flex-shrink: 0;
+    padding-right: 6px;
+}
+
+.ud-batch-body .ud-table-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-top: none;
+    overscroll-behavior: contain;
+}
+
+/* =================================================================
+   4. 任务管理页布局 (Manager Layout - Grid Parts)
+   ================================================================= */
+/* 头部信息 */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.card-filename {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80%;
+}
+
+/* 信息网格 */
+.card-info-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr;
+    gap: 24px;
+    padding: 16px;
+    background: var(--muted);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+}
+
+.grid-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.grid-label {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.grid-value {
+    font-size: 14px;
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+.grid-kv-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.grid-kv-key {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-right: 8px;
+    min-width: 48px;
+}
+
+.grid-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* 等待中状态行 */
+.waiting-info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 8px 0;
+}
+
+/* =================================================================
+   5. 设置页面专用布局 (Settings Layout)
+   ================================================================= */
+/* Settings Iframe 宿主 Body 样式 */
+.ud-settings-body {
+    background: transparent;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 容器 (保持原样，确认无硬编码) */
+.ud-settings-container {
+    width: 760px;
+    height: 520px;
+    background: var(--background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    display: flex;
+    flex-shrink: 0;
+}
+
+/* --- 左侧侧边栏 (Sidebar) --- */
+.ud-settings-sidebar {
+    width: 220px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 12px;
+    flex-shrink: 0;
+}
+
+/* 左侧大标题 */
+.ud-settings-app-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 24px;
+    padding-left: 12px;
+}
+
+/* 导航菜单项 */
+.ud-settings-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--muted-foreground);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    border: none;
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 2px;
+    font-weight: 500;
+}
+
+.ud-settings-nav-item:hover {
+    background: var(--sidebar-accent);
+    color: var(--foreground);
+}
+
+/* 选中状态 */
+.ud-settings-nav-item.active {
+    background: var(--sidebar-accent);
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+.ud-settings-nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    fill: var(--primary);
+    color: var(--primary);
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- 右侧面板 (Right Panel) --- */
+.ud-settings-right-panel {
+    flex: 1;
+    background: var(--muted);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+}
+
+/* 1. 固定头部 (Fixed Header) */
+.ud-settings-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 48px 16px 32px;
+    background: var(--muted);
+    z-index: 10;
+    position: relative;
+}
+
+/* 统一的面板头部布局 */
+.ud-settings-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ud-settings-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 2. 绝对定位关闭按钮 */
+.ud-close-absolute {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    border-radius: 4px;
+}
+
+.ud-close-absolute svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.ud-close-absolute:hover {
+    color: var(--foreground);
+    background: var(--accent);
+}
+
+/* 3. 滚动内容区 */
+.ud-settings-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 48px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+    overscroll-behavior: contain;
+}
+
+.ud-settings-content-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Settings Iframe 宿主 Body 样式 */
+.ud-settings-body {
+    background: transparent;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Iframe 内部 Body 基础样式 (替代 settings-frame.html 和 download-frame.html 的 <style>) */
+.ud-iframe-body {
+    background: transparent;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Iframe 宿主层级样式 (替代 ui-manager.js _createIframe 的 style) */
+.ud-iframe-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+/* 显示状态 */
+.ud-iframe-layer.show {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 隐藏状态 (显式定义以覆盖 inline style) */
+.ud-iframe-layer.hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Toast ShadowDOM 宿主 (替代 ui-manager.js _initToastContainer 的 style) */
+.ud-toast-host {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 2147483647;
+    border: none;
+    outline: none;
+}
+
+/* Confirm Modal 内容样式 (替代 confirm-modal.js style.cssText) */
+.ud-confirm-content {
+    padding: 0;
+    font-size: 14px;
+    color: var(--foreground);
+    line-height: 1.6;
+}
+
+/* =================================================================
+   6. 设置表单详情布局 (Settings Form Layout)
+   ================================================================= */
+/* 一级区块：白色卡片 */
+.ud-settings-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ud-settings-section > * {
+    margin-bottom: 0 !important;
+}
+
+.ud-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.ud-form-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+}
+
+/* =================================================================
+   7. Popup 专用布局 (Extension Popup)
+   ================================================================= */
+.ud-popup-container {
+    width: 280px;
+    background: var(--background);
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+}
+
+.ud-popup-header {
+    padding: 12px 12px 8px 12px;
+    border-bottom: none;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.ud-popup-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--foreground);
+}
+
+.ud-popup-version {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.ud-popup-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    color: var(--foreground);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+}
+
+.ud-popup-item:hover {
+    background: var(--accent);
+    color: var(--foreground);
+}
+
+/* 菜单图标 */
+.ud-popup-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: var(--primary);
+    transition: fill 0.1s;
+}
+
+/* SVG 尺寸适配 */
+.ud-popup-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: inherit;
+}
+
+/* =================================================================
+   8. 数据表格布局 (Data Table Layout)
+   ================================================================= */
+.ud-table-container {
+    display: block;
+}
+
+.ud-table-grid {
+    display: grid;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+}
+
+.ud-table-header {
+    height: 40px;
+    background: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--foreground);
+    user-select: none;
+    transition: background-color 0.1s;
+    border: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
+    position: relative;
+    z-index: 10;
+}
+
+.ud-table-body {
+    background: var(--card);
+    overflow-y: none;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+.ud-table-row {
+    height: 40px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.ud-table-row:hover {
+    background: var(--accent);
+}
+
+.ud-table-row:last-child {
+    border-bottom: none;
+}
+
+.ud-table-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.ud-col-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ud-col-text-right {
+    text-align: right;
+}
+
+.ud-col-text-muted {
+    color: var(--muted-foreground);
+}
+
+/* =================================================================
+   9. 任务管理页专用布局 (Manager Layout)
+   ================================================================= */
+/* --- 全屏应用容器 --- */
+.ud-layout-manager {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background: var(--muted);
+}
+
+/* --- 侧边栏 (Sidebar) --- */
+.ud-sidebar-collapsible {
+    width: 240px;
+    background: var(--background);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 10;
+}
+
+.ud-sidebar-collapsible.collapsed {
+    width: 108px;
+}
+
+/* 侧边栏头部 */
+.ud-sidebar-header {
+    height: 64px;
+    padding: 0 12px 0 22px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.ud-sidebar-collapsible.collapsed .ud-sidebar-header {
+    padding: 0 0 0 22px;
+}
+
+.ud-sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--foreground);
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s;
+    margin-left: 12px;
+}
+
+.ud-sidebar-collapsible.collapsed .ud-sidebar-title {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 侧边栏导航列表容器 */
+.ud-sidebar-nav-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+    margin-top: 10px;
+    overflow-y: auto;
+}
+
+/* 侧边栏底部容器 */
+.ud-sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* --- 右侧主面板 (Right Panel) --- */
+.ud-right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-width: 0;
+    overflow: hidden;
+    background-color: var(--background);
+    position: relative;
+}
+
+/* --- 核心网格系统 (Grid System) --- */
+/* 行布局容器 */
+.ud-row-layout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+/* 两侧自适应列 */
+.ud-col-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.ud-col-side.left {
+    min-width: 100px;
+}
+
+/* Header 左侧微调 */
+.ud-main-header .ud-col-side.left {
+    padding-left: 0px;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+/* 中间固定列 (核心对齐基准) */
+.ud-col-center {
+    width: 860px;
+    flex-shrink: 0;
+    margin: 0 24px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+/* --- 顶部导航栏 (Header) --- */
+.ud-main-header {
+    position: relative;
+    flex-shrink: 0;
+    height: 64px;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    background-color: var(--background);
+    z-index: 20;
+}
+
+/* Header 中间区域 Flex 容器 */
+.ud-header-flex-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* --- 主内容区 (Content) --- */
+.ud-main-content {
+    flex: 1;
+    overflow-y: overlay;
+    min-height: 0;
+    padding: 20px 0 40px 0;
+    position: relative;
+    scroll-behavior: smooth;
+    @supports not (overflow-y: overlay) {
+        overflow-y: auto;
+    }
+
+}
+
+/* Content 区域的行布局适配 (顶部对齐) */
+.ud-main-content .ud-row-layout {
+    align-items: flex-start;
+}
+
+/* Content 区域的中间列适配 (块级流) */
+.ud-main-content .ud-col-center {
+    display: block;
+}
+
+/* --- 视图容器 (View Containers) --- */
+.ud-view-section {
+    width: 100%;
+    display: none;
+}
+
+.ud-view-section.active {
+    display: block;
+    animation: ud-fade-up 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* 分页组件容器 */
+.ud-pagination-wrapper {
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+
+/* 空状态 */
+.ud-empty-state {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--muted-foreground);
+    font-size: 14px;
+}
+
+/* 动画关键帧 */
+@keyframes ud-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+

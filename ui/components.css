@@ -1,0 +1,2309 @@
+/* --- ui/components.css --- */
+/* =================================================================
+   1. 标签组件 (Tags)
+   ================================================================= */
+.ud-tag {
+    display: inline-flex;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 6px;
+    line-height: 1.4;
+    white-space: nowrap;
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/* =================================================================
+   2. 表单与设置组件 (Forms & Settings)
+   ================================================================= */
+/* --- 2.1 基础排版 (Typography) --- */
+.ud-panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--foreground);
+    line-height: 1.2;
+    margin-bottom: 0px;
+}
+
+.ud-form-label {
+    font-size: 14px;
+    color: var(--foreground);
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.ud-form-note {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 2px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.ud-form-suffix {
+    font-size: 14px;
+    color: var(--muted-foreground);
+    user-select: none;
+    line-height: 1.5;
+}
+
+/* --- 2.2 布局容器 (Layouts) --- */
+/* 表单行 (Form Row) */
+.ud-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+/* [新增] 顶部对齐模式 (用于包含长说明文字的行) */
+.ud-form-row.align-start {
+    align-items: flex-start;
+}
+
+/* [新增] 顶部对齐模式下，右侧控件微调垂直位置，与 Label 文字基线对齐 */
+.ud-form-row.align-start .ud-form-controls {
+    margin-top: 2px;
+}
+
+/* Label 组容器 (垂直排列 Label 和 Note) */
+.ud-form-label-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+    margin-right: 0;
+}
+
+/* [新增] 音效列表容器 (用于 theme-panel) */
+.ud-sound-list-container {
+    margin-top: 8px;
+}
+
+/* [变体] 紧凑型/两端对齐行 */
+.ud-form-row.flex-between {
+    padding: 4px 0;
+}
+
+.ud-form-row.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* 右侧控件组容器 */
+.ud-form-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    margin-left: 24px;
+}
+
+/* 当控件在行内控件组中时，移除底部间距 */
+.ud-form-controls .ud-form-control-wrapper {
+    margin-bottom: 0;
+}
+
+/* --- 2.3 开关 (Switch) --- */
+.ud-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.ud-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ud-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--input);
+    transition: 0.3s;
+    border-radius: 22px;
+}
+
+.ud-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--background);
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .ud-slider {
+    background-color: var(--primary);
+}
+
+input:checked + .ud-slider:before {
+    transform: translateX(18px);
+}
+
+/* --- 2.4 复选框 (Checkbox) --- */
+.ud-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--input);
+    border-radius: 4px;
+    background: var(--background);
+    cursor: pointer;
+    position: relative;
+    margin: 0;
+    transition: 0.15s;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ud-checkbox:hover {
+    border-color: var(--ring);
+}
+
+.ud-checkbox:checked,
+.ud-checkbox:indeterminate {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/* 勾选图标 */
+.ud-checkbox:checked::after {
+    content: "";
+    width: 4px;
+    height: 8px;
+    border: solid var(--primary-foreground);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
+}
+
+/* 半选图标 */
+.ud-checkbox:indeterminate::after {
+    content: "";
+    width: 10px;
+    height: 2px;
+    background: var(--primary-foreground);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    border: none;
+}
+
+/* --- 2.6 文本输入框 (Input) --- */
+.ud-input {
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--foreground);
+    line-height: 1.5;
+    background-color: var(--background);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
+    transition: border-color 0.15s;
+}
+
+.ud-input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 1px var(--ring);
+}
+
+.ud-input:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.ud-input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.7;
+}
+
+/* 移除数字输入框微调按钮 */
+.ud-input::-webkit-outer-spin-button,
+.ud-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 短数字输入框 */
+.ud-input-number-sm input,
+.ud-input-number-md input {
+    text-align: center !important;
+    padding: 4px 8px !important;
+    height: 32px !important;
+}
+
+.ud-input-number-sm input {
+    width: 60px !important;
+}
+
+.ud-input-number-md input {
+    width: 80px !important;
+}
+
+/* [新增] 模态框表单组垂直布局 (用于自定义主题弹窗) */
+.ud-modal-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+/* =================================================================
+   3. 策略卡片 (Strategy Cards)
+   ================================================================= */
+.ud-strategy-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 16px;
+    padding-right: 48px;
+    gap: 12px;
+    position: relative;
+    margin-bottom: 12px;
+}
+
+/* [新增] 卡片右上角操作按钮 (替代 JS 复杂的 absolute/transform) */
+.ud-st-action-trigger {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    margin-top: -16px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    transform: rotate(90deg);
+}
+
+.ud-st-action-trigger svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.ud-st-action-trigger:hover,
+.ud-st-action-trigger.active {
+    background-color: var(--accent);
+    color: var(--foreground);
+}
+
+.ud-st-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--foreground);
+    line-height: 1.4;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* =================================================================
+   4. 状态与进度 (Status & Progress)
+   ================================================================= */
+/* 进度条容器 */
+.ud-progress-container {
+    height: 6px;
+    width: 100%;
+    background: var(--secondary);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+/* 进度条本体 */
+.ud-progress-bar {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: width 0.3s ease;
+    background-image: none;
+    animation: none;
+}
+
+/* 成功状态 (虽然通常下载完成会移除进度条，但保留以备用) */
+.ud-progress-bar.success {
+    background: #16a34a;
+    animation: none;
+}
+
+/* 错误状态 */
+.ud-progress-bar.error {
+    background: var(--destructive);
+    animation: none;
+}
+
+/* 动画关键帧 */
+@keyframes ud-progress-stripe {
+    0% {
+        background-position: 16px 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+
+}
+
+/* 状态辅助文字工具类 */
+.text-success {
+    color: #16a34a !important;
+}
+
+.text-error {
+    color: var(--destructive) !important;
+}
+
+/* =================================================================
+   5. Toast 提示组件
+   ================================================================= */
+.ud-toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0 24px;
+}
+
+.ud-toast {
+    background: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-float);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: auto;
+    min-width: 120px;
+    max-width: min(960px, calc(100vw - 48px));
+    box-sizing: border-box;
+}
+
+.ud-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 继承 .ud-toast 的基础样式，此处仅定义差异部分 */
+.ud-toast.ud-toast-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    padding-right: 40px;
+    min-width: 360px;
+    max-width: 480px;
+    gap: 16px;
+    position: relative;
+}
+
+/* 文字区域 */
+.ud-toast-content {
+    flex: 1 1 auto;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+    min-width: 0;
+}
+
+/* 按钮组容器 (用于包裹右侧多个按钮) */
+.ud-toast-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Toast 内部的功能按钮 - 复用 .ud-btn-normal */
+.ud-toast .ud-btn-normal {
+    height: 30px;
+    font-size: 13px;
+    padding: 0 12px;
+    white-space: nowrap;
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ud-toast .ud-btn-normal:hover {
+    background-color: var(--muted);
+}
+
+/* =================================================================
+   6. 按钮组件 (Buttons)
+   ================================================================= */
+/* --- 6.1 基础结构 --- */
+.ud-btn,
+.ud-btn-important,
+.ud-btn-normal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    height: 36px;
+    padding: 0 16px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    gap: 8px;
+    border: 1px solid transparent;
+}
+
+/* --- 6.2 重要操作按钮 (Primary) --- */
+.ud-btn-important {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: transparent;
+    box-shadow: var(--shadow-sm);
+}
+
+.ud-btn-important:hover {
+    opacity: 0.9;
+}
+
+.ud-btn-important:active {
+    transform: scale(0.98);
+}
+
+/* --- 6.3 普通/轮廓按钮 (Outline) --- */
+.ud-btn-normal {
+    background-color: var(--background);
+    color: var(--foreground);
+    border-color: var(--input);
+    box-shadow: var(--shadow-sm);
+}
+
+.ud-btn-normal:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.ud-btn-normal:active {
+    transform: scale(0.98);
+}
+
+/* --- 6.4 危险/毁灭按钮 (Destructive) --- */
+.ud-btn-destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+    border-color: transparent;
+    box-shadow: var(--shadow-sm);
+}
+
+.ud-btn-destructive:hover {
+    opacity: 0.9;
+}
+
+.ud-btn-destructive:active {
+    transform: scale(0.98);
+}
+
+/* --- 6.5 纯图标按钮 (Ghost) --- */
+.ud-icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--primary);
+    background: transparent;
+    border: none;
+    transition:
+        color 0.2s,
+        transform 0.1s;
+    z-index: 1;
+}
+
+.ud-icon-btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: transparent;
+    transition:
+        background-color 0.2s,
+        opacity 0.2s;
+    z-index: -1;
+}
+
+.ud-icon-btn:hover::before {
+    background-color: var(--accent);
+}
+
+.ud-icon-btn:hover {
+    color: var(--primary);
+}
+
+/* Active 状态 (开启) */
+.ud-icon-btn.active {
+    color: var(--background);
+}
+
+.ud-icon-btn.active::before {
+    background-color: var(--primary);
+}
+
+.ud-icon-btn.active:hover::before {
+    background-color: var(--primary);
+    opacity: 0.9;
+}
+
+.ud-icon-btn.active:hover {
+    color: var(--background);
+}
+
+.ud-icon-btn:active {
+    transform: scale(0.92);
+}
+
+/* --- 6.6 禁用状态 (Disabled) --- */
+.ud-btn-important:disabled,
+.ud-btn-normal:disabled,
+.ud-icon-btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* --- 6.7 SVG 图标适配 --- */
+.ud-btn-important svg,
+.ud-btn-normal svg,
+.ud-icon-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* --- 6.8 按钮尺寸工具类 --- */
+.ud-btn-w-sm {
+    min-width: 80px;
+}
+
+.ud-btn-w-md {
+    min-width: 120px;
+}
+
+.ud-btn-w-lg {
+    min-width: 200px;
+}
+
+/* --- 6.9 回到顶部浮动按钮 (Back To Top) --- */
+.ud-back-to-top {
+    position: fixed;
+    bottom: 40px;
+    right: 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    box-shadow: var(--shadow-float);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 50;
+}
+
+.ud-back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.ud-back-to-top:hover {
+    transform: translateY(-4px);
+    opacity: 0.9;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ud-back-to-top .icon {
+    width: 36px;
+    height: 36px;
+    transform: rotate(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ud-back-to-top .icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+
+.ud-btn-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    transform: rotate(90deg);
+}
+
+.ud-btn-back:hover {
+    background-color: var(--accent);
+}
+
+.ud-btn-back:active {
+    transform: rotate(90deg) scale(0.96);
+}
+
+/* 修正 SVG 尺寸 (放大) */
+.ud-btn-back svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* =================================================================
+   7. 浮层菜单与选择器系统
+   ================================================================= */
+/* --- 1. 触发器 (Trigger) --- */
+.ud-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    background: var(--background);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    color: var(--foreground);
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: 0.15s;
+}
+
+.ud-select-trigger:hover {
+    background: var(--accent);
+    border-color: var(--ring);
+}
+
+.ud-select-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    margin-right: 8px;
+}
+
+.ud-select-arrow {
+    width: 18px;
+    height: 18px;
+    fill: var(--muted-foreground);
+    flex-shrink: 0;
+}
+
+/* --- 2. 菜单容器 (Menu Container) --- */
+.ud-floating-menu {
+    position: absolute;
+    z-index: 2000;
+    min-width: 8rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    padding: 4px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition:
+        opacity 0.1s ease,
+        transform 0.1s ease;
+    pointer-events: none;
+}
+
+.ud-floating-menu.show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* --- 3. 菜单项 (Menu Item) --- */
+.ud-menu-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 12px 8px 32px;
+    font-size: 14px;
+    outline: none;
+    transition:
+        background-color 0.1s,
+        color 0.1s;
+    color: var(--popover-foreground);
+}
+
+.ud-menu-item:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.ud-menu-item.selected {
+    font-weight: 500;
+}
+
+.ud-menu-icon-check {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+}
+
+.ud-menu-item.selected .ud-menu-icon-check {
+    opacity: 1;
+}
+
+.ud-menu-icon-check svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+/* --- 4. 危险项 (Danger Variant) --- */
+.ud-menu-item.danger {
+    color: var(--destructive);
+}
+
+.ud-menu-item.danger:hover {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+/* --- 5. 下拉选择框相关 --- */
+/* 自定义选择器外层容器 (用于控制 Label 与 Select 的布局) */
+.ud-select-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* 布局模式 1: 起始对齐 (默认，用于下载弹窗、分页栏) */
+.ud-select-wrapper.layout-start {
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+/* 布局模式 2: 两端对齐 (用于设置页面的表单行) */
+.ud-select-wrapper.layout-between {
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* 修正 Label 在 Wrapper 内的默认边距 */
+.ud-select-wrapper .ud-form-label {
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+/* [新增] 选择器本体容器 (替代 JS 中的 style.position/width) */
+.ud-custom-select-container {
+    position: relative;
+    min-width: 120px;
+}
+
+/* =================================================================
+   8. 侧边栏导航组件 (Sidebar Navigation)
+   ================================================================= */
+.ud-nav-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0 12px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 悬停态 */
+.ud-nav-btn:hover {
+    background: var(--sidebar-accent);
+    color: var(--foreground);
+}
+
+/* 激活态 */
+.ud-nav-btn.active {
+    background: var(--sidebar-accent);
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+/* [New] 侧边栏功能按钮 (设置按钮专用) - 复用基础样式但不包含 Active 逻辑 */
+.ud-sidebar-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0 12px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.ud-sidebar-btn:hover {
+    background: var(--sidebar-accent);
+    color: var(--foreground);
+}
+
+.ud-nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    color: var(--primary);
+    fill: currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ud-nav-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ud-nav-text {
+    flex: 1;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.ud-table-cell svg,
+.ud-table-cell svg path {
+    fill: currentColor !important;
+}
+
+.ud-sidebar-collapsible.collapsed .ud-nav-text {
+    display: none;
+}
+
+.ud-sidebar-icon-lg {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ud-sidebar-icon-lg svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+
+/* 导航徽标 (Badge) */
+.ud-nav-badge {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    margin-left: auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* 折叠时的 Badge 样式 */
+.ud-sidebar-collapsible.collapsed .ud-nav-badge {
+    display: flex;
+}
+
+/* 激活态下的徽标颜色 -> 使用 Primary 配色方案 (Point 3) */
+.ud-nav-btn.active .ud-nav-badge {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/* =================================================================
+   9. 统一任务卡片组件 (Unified Task Card)
+   ================================================================= */
+/* --- 1. 卡片容器与基础 --- */
+.ud-task-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s;
+    position: relative;
+}
+
+.ud-task-card:hover {
+    border-color: var(--border);
+}
+
+/* 批量选择复选框 */
+.ud-task-checkbox {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 20;
+    display: none;
+    background-color: var(--background);
+    border-color: var(--input);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 批量模式下显示复选框 */
+.ud-right-panel.batch-mode .ud-task-checkbox {
+    display: inline-flex;
+    animation: ud-fade-in 0.2s ease;
+}
+
+.ud-card-title.js-open-file {
+    cursor: pointer;
+}
+
+/* --- 2. 主内容布局 --- */
+.ud-card-body {
+    display: flex;
+    gap: 20px;
+}
+
+/* 左侧封面容器 */
+.ud-card-thumb {
+    width: 200px;
+    height: 112px;
+    flex-shrink: 0;
+    background: var(--muted);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+}
+
+/* 封面图片渐变动效 */
+.ud-card-thumb img {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ud-card-thumb img.loaded {
+    display: block;
+    opacity: 1;
+}
+
+/* 封面占位符 */
+.ud-thumb-placeholder {
+    opacity: 0.2;
+    transform: scale(2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--foreground);
+}
+
+.ud-card-thumb.no-img svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+}
+
+/* 右侧信息列 */
+.ud-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    justify-content: space-between;
+}
+
+/* --- 3. 顶部区域 (Header Row) --- */
+.ud-card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.ud-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.ud-card-title.js-open-file:hover {
+    color: var(--primary);
+}
+
+/* 顶部操作按钮 (Top Action) */
+.ud-card-top-action {
+    margin-top: -9px;
+    margin-right: -12px;
+}
+
+/* --- 4. 中间区域 (Mid Row) --- */
+.ud-card-mid-row {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 0px;
+}
+
+.ud-card-mid-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 160px;
+}
+
+.ud-card-mid-right {
+    display: flex;
+    gap: 6px;
+    margin-left: 0px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.ud-author-name {
+    font-size: 13px;
+    color: var(--muted-foreground);
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ud-author-name:hover {
+    color: var(--primary);
+}
+
+/* UP主/标签微型样式 */
+.ud-tag.mini {
+    margin-right: 6px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0 4px;
+    font-size: 11px;
+}
+
+/* [New] 独立的 UP 主标签样式 (解耦) */
+.ud-up-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    height: 20px;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    line-height: 1;
+    background: transparent;
+    color: var(--muted-foreground);
+    border: 1px solid var(--muted-foreground);
+    opacity: 0.8;
+}
+
+.ud-card-error {
+    color: var(--destructive);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- 5. 底部区域 (Bottom Row) --- */
+.ud-card-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    height: 24px;
+}
+
+.ud-card-bottom-left {
+    overflow: hidden;
+    padding-bottom: 0px;
+}
+
+/* 底部操作栏 */
+.ud-card-actions {
+    display: flex;
+    gap: 8px;
+    transform: translateY(4px);
+    margin-right: -9px;
+    margin-bottom: -6px;
+}
+
+/* 元数据 */
+.ud-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+.ud-card-meta-item {
+    display: flex;
+    align-items: center;
+}
+
+.ud-card-meta-label {
+    margin-right: 4px;
+    color: var(--muted-foreground);
+    opacity: 0.8;
+}
+
+.ud-card-meta-value {
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+/* --- 6. 进度条区域 --- */
+.ud-card-progress {
+    margin-top: 6px;
+    padding-top: 0;
+    border: none !important;
+}
+
+.ud-card-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 20px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-bottom: 6px;
+}
+
+.ud-progress-left,
+.ud-progress-right {
+    display: flex;
+    align-items: center;
+}
+
+/* --- 7. 信息键值对组件 (Info Pairs) --- */
+.ud-info-pair {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+.ud-info-pair:last-child {
+    margin-right: 0;
+}
+
+.ud-info-pair .pair-label {
+    color: var(--muted-foreground);
+    margin-right: 2px;
+}
+
+.ud-info-pair .pair-value {
+    color: var(--muted-foreground);
+}
+
+.ud-metric-item {
+    margin-left: 12px;
+}
+
+.ud-metric-item:first-child {
+    margin-left: 0;
+}
+
+/* --- 8. 卡片专用工具类 (Card Utilities) --- */
+.text-xs {
+    font-size: 11px !important;
+}
+
+.text-sm {
+    font-size: 12px !important;
+}
+
+.ud-text-muted {
+    color: var(--muted-foreground);
+}
+
+.ud-flex-center {
+    display: flex;
+    align-items: center;
+}
+
+.ud-flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 状态颜色 */
+.ud-status-waiting {
+    color: #d97706;
+}
+
+/* =================================================================
+   10. Tooltip 提示组件
+   ================================================================= */
+.ud-tooltip {
+    position: fixed;
+    z-index: 4000;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-float);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.96);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s cubic-bezier(0.2, 0, 0.13, 1.5);
+    white-space: normal;
+    word-break: break-word;
+    max-width: 260px;
+    width: max-content;
+    height: auto;
+    visibility: hidden;
+}
+
+.ud-tooltip.show {
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+}
+
+/* Tooltip 内嵌 Tag 的微调 */
+.ud-tooltip .ud-tag {
+    margin: 2px 4px 2px 0;
+    vertical-align: middle;
+}
+
+.ud-tooltip-group {
+    margin-bottom: 8px;
+}
+
+.ud-tooltip-label {
+    font-size: 12px;
+    color: var(--foreground);
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+/* =================================================================
+   11. 音效设置列表组件 (Sound Radio List)
+   ================================================================= */
+/* [复] 列表行外层包装器 */
+.ud-radio-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+/* 列表行本体 */
+.ud-radio-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    padding-right: 48px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    transition: all 0.2s;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.ud-radio-row:hover {
+    border-color: var(--ring);
+    background: var(--accent);
+}
+
+.ud-radio-row.checked {
+    border-color: var(--primary);
+    background: var(--accent);
+}
+
+/* [复] 悬浮操作按钮 (绝对定位 + 尺寸约束) */
+.ud-radio-action-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+}
+
+/* [核心复] 强制约束 SVG 图标尺寸，防止变大 */
+.ud-radio-action-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: currentColor;
+    display: block;
+}
+
+/* 交互：父容器 Hover 时显示按钮 */
+.ud-radio-wrapper:hover .ud-radio-action-btn,
+.ud-radio-action-btn.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 按钮自身的 Hover 态 */
+.ud-radio-action-btn:hover {
+    background-color: var(--background);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+/* 左侧点击区域 (占据剩余空间) */
+.ud-radio-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+/* 模拟单选框圆圈 */
+.ud-radio-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--input);
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.ud-radio-row:hover .ud-radio-circle {
+    border-color: var(--ring);
+}
+
+.ud-radio-row.checked .ud-radio-circle {
+    border-color: var(--primary);
+}
+
+/* 选中时的中心圆点 */
+.ud-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+/* 右侧试听按钮 */
+.ud-radio-play-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+    transition: all 0.2s;
+}
+
+.ud-radio-play-btn:hover {
+    background: var(--secondary);
+    color: var(--primary);
+}
+
+.ud-radio-play-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* [] 音效设置列表组件 */
+.ud-radio-filename-wrapper {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-right: 12px;
+    font-size: 14px;
+    color: var(--foreground);
+    width: 100%;
+}
+
+.ud-radio-fname {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 1;
+}
+
+.ud-radio-fext {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* =================================================================
+   12. 滑块组件 (Slider)
+   ================================================================= */
+.ud-slider-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.ud-slider-input {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--input);
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* 滑块按钮 (Thumb) */
+.ud-slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--background);
+    border: 2px solid var(--primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: grab;
+    transition: transform 0.1s;
+}
+
+.ud-slider-input::-webkit-slider-thumb:active {
+    transform: scale(1.1);
+    cursor: grabbing;
+}
+
+/* =================================================================
+   13. 主题选择器网格 (Theme Grid)
+   ================================================================= */
+.ud-theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 16px 12px;
+    margin-bottom: 24px;
+}
+
+.ud-theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s;
+}
+
+.ud-theme-option:active {
+    transform: scale(0.95);
+}
+
+.ud-theme-preview {
+    width: 100%;
+    aspect-ratio: 1.6;
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    border: 2px solid transparent;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    transition: all 0.2s;
+}
+
+/* Hover 效果 */
+.ud-theme-option:hover .ud-theme-preview {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* 选中态 */
+.ud-theme-option.active .ud-theme-preview {
+    border-color: var(--background);
+    box-shadow:
+        0 0 0 2px var(--primary),
+        var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.ud-theme-label {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    text-align: center;
+    transition: color 0.2s;
+    line-height: 1.3;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ud-theme-option:hover .ud-theme-label,
+.ud-theme-option.active .ud-theme-label {
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+/* 个性化主题添加按钮 */
+.ud-theme-preview.add-btn {
+    background-color: var(--input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+    border: 2px dashed var(--border);
+    transition:
+        background-color 0.2s,
+        color 0.2s;
+}
+
+.ud-theme-option:hover .ud-theme-preview.add-btn {
+    border-style: solid;
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: var(--accent);
+}
+
+.ud-theme-preview.add-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+/* =================================================================
+   14. 搜索组件 (Search Component)
+   ================================================================= */
+.ud-search-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.ud-search-wrapper .ud-input {
+    padding-left: 36px;
+    padding-right: 36px;
+    border-radius: 99px;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+/* 左侧搜索图标 */
+.ud-search-icon {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.ud-search-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+
+/* 右侧清除按钮 [需求3] */
+.ud-search-clear {
+    position: absolute;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+}
+
+.ud-search-clear:hover {
+    background-color: var(--accent);
+    color: var(--foreground);
+}
+
+.ud-search-clear svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+/* 当容器拥有 .has-value 类时显示清除按钮 */
+.ud-search-wrapper.has-value .ud-search-clear {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+/* =================================================================
+   15. 搜索统计条 (Search Stats)
+   ================================================================= */
+.ud-search-stats {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono, monospace);
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    transition:
+        max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease,
+        margin-bottom 0.3s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+}
+
+/* 激活状态 */
+.ud-search-stats.show {
+    max-height: 24px;
+    opacity: 1;
+    margin-bottom: 12px;
+}
+
+/* =================================================================
+   16. 卡片悬浮操作按钮 (Overlay Action Button)
+   ================================================================= */
+.ud-card-overlay-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--background);
+    opacity: 0;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+/* 父容器 Hover 或 按钮激活时显示 */
+.ud-theme-option:hover .ud-card-overlay-btn,
+/* []增策略卡片的 Hover 支持 */
+.ud-strategy-card:hover .ud-card-overlay-btn,
+.ud-card-overlay-btn.active {
+    opacity: 1;
+}
+
+.ud-card-overlay-btn:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+    transform: scale(1.05);
+}
+
+.ud-card-overlay-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+/* =================================================================
+   17. 批量操作栏与动画 (Batch Actions & Animation)
+   ================================================================= */
+/* 复选框容器 (Header Checkbox) */
+.ud-batch-checkbox-wrapper {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    transition:
+        width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* 严格对齐：卡片Padding(16px) + Checkbox左距(8px) = 24px */
+#header-batch-checkbox {
+    margin-left: 24px;
+    margin-right: 16px;
+}
+
+/* 操作按钮容器 */
+.ud-batch-actions-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    max-width: 0;
+    opacity: 0;
+    flex-shrink: 0;
+    transition:
+        max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease,
+        padding-right 0.3s ease;
+}
+
+/* --- 激活状态 (.batch-mode 由 JS 切换) --- */
+/* 1. 展开 Header 复选框 (24+16+16 = 56px) */
+.ud-right-panel.batch-mode .ud-batch-checkbox-wrapper {
+    width: 56px;
+    opacity: 1;
+}
+
+/* 2. 展开 Header 操作按钮 */
+.ud-right-panel.batch-mode .ud-batch-actions-wrapper {
+    max-width: 300px;
+    opacity: 1;
+    padding-right: 12px;
+}
+
+/* [新增] 批量模式下的卡片交互样式 */
+.ud-right-panel.batch-mode .ud-task-card {
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+/* [关键] 禁用卡片内部除了 Checkbox 以外的所有交互，实现点击穿透 */
+.ud-right-panel.batch-mode .ud-card-body {
+    pointer-events: none;
+    user-select: none;
+}
+
+/* 恢复 Checkbox 的交互，虽然点击卡片也能触发，但保留其独立性 */
+.ud-right-panel.batch-mode .ud-task-checkbox {
+    pointer-events: none;
+}
+
+/* =================================================================
+   18. 分页组件 (Pagination) 
+   ================================================================= */
+/* 外层包装器：左(条数) - 中(页码) - 右(跳转) */
+.ud-pg-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 12px 0;
+    width: 100%;
+    user-select: none;
+}
+
+/* 侧边栏 (左/右) */
+.ud-pg-side {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+}
+
+/* 中间页码容器 */
+.ud-pg-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* 页码按钮 */
+.ud-pg-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 4px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-mono, monospace);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--foreground);
+}
+
+/* 选中状态：实色填充，圆角矩形 */
+.ud-pg-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+}
+
+/* 悬停效果：轻微背景色 */
+.ud-pg-item:hover:not(.active):not(.disabled):not(.dots) {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* 禁用状态 */
+.ud-pg-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* 省略号 */
+.ud-pg-item.dots {
+    cursor: default;
+    color: var(--muted-foreground);
+}
+
+/* 图标容器 */
+.ud-pg-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ud-pg-prev .ud-pg-icon {
+    transform: rotate(90deg);
+}
+
+.ud-pg-next .ud-pg-icon {
+    transform: rotate(270deg);
+}
+
+/* =================================================================
+   19. 面板占位符与空状态
+   ================================================================= */
+/* 用于 "关于" 页面或 "模块未加载" 的提示容器 */
+.ud-panel-placeholder {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted-foreground);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* =================================================================
+   20. 树形列表组件 (Tree View)
+   ================================================================= */
+/* 树节点行容器 (配合 ud-batch-grid 使用) */
+.ud-tree-row {
+    cursor: pointer;
+    --tree-indent-step: 24px;
+    --tree-toggle-width: 20px;
+    --tree-icon-size: 32px;
+}
+
+/* 选中行高亮 */
+.ud-tree-row.is-current {
+    background-color: var(--accent);
+}
+
+/* 内容单元格 (第2列) */
+.ud-tree-cell-content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-left: calc(var(--tree-level, 0) * var(--tree-indent-step));
+    overflow: hidden;
+    padding-right: 12px;
+}
+
+/* 表头对齐修正类 (用于对齐内容区的文字起始位置) */
+.ud-tree-header-fix {
+    padding-left: 28px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* 折叠/展开 触发器 */
+.ud-tree-toggle {
+    width: var(--tree-toggle-width);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+    opacity: 0.7;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: rotate(0deg);
+}
+
+/* 状态：折叠 (Collapsed): 旋转 -90度 指向右侧 */
+.ud-tree-row:not(.expanded) .ud-tree-toggle {
+    transform: rotate(-90deg);
+}
+
+/* 文件类型的占位符 (不可见但占位) */
+.ud-tree-toggle.placeholder {
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.ud-tree-toggle svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* 类型图标容器 (Folder / TV) */
+.ud-tree-icon-container {
+    width: var(--tree-icon-size);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ud-tree-icon-container svg {
+    fill: currentColor;
+}
+
+/* 文件夹图标颜色 */
+.ud-tree-icon-folder {
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+}
+
+/* 视频图标颜色 */
+.ud-tree-icon-file {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+
+/* 文本标签 */
+.ud-tree-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    color: var(--foreground);
+    line-height: 1.5;
+}
+
+/* =================================================================
+   21. 搜索高亮 (Search Highlight)
+   ================================================================= */
+.ud-search-highlight {
+    background-color: var(--highlight);
+    border-radius: 0;
+    font-weight: inherit;
+    box-shadow: none;
+    padding: 0 1px;
+}
+
+/* =================================================================
+   22. 设置页专用按钮 (Settings Buttons)
+   ================================================================= */
+.ud-btn-settings {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    height: 30px;
+    font-size: 13px;
+    font-weight: 400;
+    padding: 0 12px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    gap: 6px;
+    border: 1px solid transparent;
+}
+
+/* 强制 SVG 尺寸适配 */
+.ud-btn-settings svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+/* 变体 1: 实色 (Primary) */
+.ud-btn-settings.primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: transparent;
+    box-shadow: var(--shadow-sm);
+}
+
+.ud-btn-settings.primary:hover {
+    opacity: 0.9;
+}
+
+.ud-btn-settings.primary:active {
+    transform: scale(0.98);
+}
+
+/* 变体 2: 描边 (Normal) */
+.ud-btn-settings.normal {
+    background-color: var(--background);
+    color: var(--foreground);
+    border-color: var(--input);
+    box-shadow: var(--shadow-sm);
+}
+
+.ud-btn-settings.normal:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.ud-btn-settings.normal:active {
+    transform: scale(0.98);
+}
+
+/* =================================================================
+   23. 音效管理器布局 (Sound Manager)
+   ================================================================= */
+.ud-sound-manager-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.ud-sound-actions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.ud-sound-list-body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* =================================================================
+   24. 关于面板组件 (About Panel)
+   ================================================================= */
+.ud-about-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-top: 8px;
+    text-align: center;
+}
+
+.ud-about-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    object-fit: contain;
+}
+
+.ud-about-desc {
+    font-size: 14px;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+    max-width: 80%;
+}
+
+.ud-about-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.ud-link {
+    color: var(--primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.ud-link:hover {
+    opacity: 0.8;
+}

@@ -1,0 +1,603 @@
+/**
+ * @file settings/strategies-panel.js
+ * @description 策略管理面板控制器 (Strategy Management Panel)
+ * * 核心职责 (Core Responsibilities):
+ * 1. 列表渲染 (List Rendering):
+ * - 展示所有下载策略卡片，包含策略名称及动态生成的标签组 (`_generateTags`)。
+ * - 标签生成逻辑：根据音视频流、合并状态、画质/编码偏好自动生成 "完整视频"、"AV1"、"杜比视界" 等标签。
+ * * 2. 策略编辑器 (Strategy Editor):
+ * - 提供完整的表单界面，支持修改名称、流媒体选项 (视频/音频/合并)、画质/编码偏好、附件选项。
+ * - 实现互斥/联动逻辑：
+ * - 当视频或音频未选中时，自动禁用并取消勾选 "合并音视频"。
+ * - 画质/编码的 "首选" 与 "次选" 互换逻辑 (`_handleSwap`)，防止二者相同。
+ * * 3. 变更检测与保护 (Change Detection & Guard):
+ * - `_hasChanges`: 通过对比表单实时状态与原始快照 (`originalStrategy`)，精准识别是否发生变更。
+ * - 路由守卫：在未保存变更时点击返回，触发二次确认弹窗，防止数据丢失。
+ * * 通信链路 (Communication):
+ * - Input: 读取 `chrome.storage.local` 获取策略列表。
+ * - Output: 写入 `chrome.storage.local`，并广播 `STRATEGIES_UPDATED` 消息通知 Background 更新。
+ * * @author weiyunjun
+ * @version v0.1.0
+ */
+
+const QUALITY_OPTIONS = [
+    { value: 'best', label: '最佳画质' },
+    { value: '8k', label: '8K' },
+    { value: 'dolby', label: '杜比视界' },
+    { value: 'hdr', label: 'HDR' },
+    { value: '4k', label: '4K' },
+    { value: '1080p', label: '1080P' },
+    { value: '720p', label: '720P' },
+    { value: '480p', label: '480P' },
+    { value: '360p', label: '360P' },
+    { value: '240p', label: '240P' },
+];
+
+class StrategiesPanel {
+    constructor(headerContainer, contentContainer, modal) {
+        this.dom = { header: headerContainer, content: contentContainer };
+        this.modal = modal;
+        this.strategies = [];
+        this.viewMode = 'list';
+        this.editingStrategy = null;
+        this.isNewRecord = false;
+        this.selectRefs = {};
+    }
+
+    _renderHeaderUI({ title: title, leftBtn: leftBtn, rightBtn: rightBtn } = {}) {
+        this.dom.header.innerHTML = '';
+        const DOM = window.DOMUtils;
+        const leftGroup = DOM.create('div', 'ud-settings-header-left');
+
+        if (leftBtn) {
+            const btn = DOM.createButton({
+                icon: leftBtn.icon,
+                type: 'ghost',
+                onClick: leftBtn.onClick,
+                className: leftBtn.className || 'ud-icon-btn',
+            });
+
+            leftGroup.appendChild(btn);
+        }
+
+        const titleEl = DOM.create('span', 'ud-panel-title', title);
+
+        leftGroup.appendChild(titleEl);
+        this.dom.header.appendChild(leftGroup);
+
+        if (rightBtn) {
+            const rightGroup = DOM.create('div', 'ud-settings-header-right');
+            const btn = DOM.createButton({
+                text: rightBtn.text,
+                icon: rightBtn.icon,
+                type: rightBtn.type,
+                onClick: rightBtn.onClick,
+            });
+
+            rightGroup.appendChild(btn);
+            this.dom.header.appendChild(rightGroup);
+        }
+    }
+
+    _renderEditor() {
+        this.dom.content.innerHTML = '';
+        const DOM = window.DOMUtils;
+        const st = this.editingStrategy;
+        const config = st.config || {};
+
+        this._renderHeaderUI({
+            title: this.isNewRecord ? '新建策略' : '编辑策略',
+            leftBtn: { text: '', icon: window.Icons.chevron, className: 'ud-btn-back', onClick: () => this._handleBack() },
+            rightBtn: {
+                text: '保存策略',
+                type: 'settings-normal',
+                icon: window.Icons.save,
+                onClick: () => this._handleSave(this.dom.content),
+            },
+        });
+        const form = this.dom.content;
+        const basicItems = [
+            DOM.createInput({
+                id: 'inp-name',
+                value: this.isNewRecord ? '' : st.name,
+                placeholder: this.isNewRecord ? '请输入策略名称...' : '请输入策略名称',
+            }),
+        ];
+
+        form.appendChild(this._createSection('策略名称', basicItems));
+        const canMerge = config.video && config.audio;
+        const streamItems = [
+            DOM.createSwitch({ label: '下载视频画面', checked: config.video, dataset: { key: 'video' } }),
+            DOM.createSwitch({ label: '下载音频轨道', checked: config.audio, dataset: { key: 'audio' } }),
+            DOM.createSwitch({
+                id: 'row-merge',
+                label: '合并音视频',
+                subLabel: '需同时下载视频和音频',
+                checked: config.merge,
+                disabled: !canMerge,
+                dataset: { key: 'merge' },
+            }),
+        ];
+
+        form.appendChild(this._createSection('流媒体下载', streamItems));
+        this.selectRefs = {};
+        const qPrimary = DOM.createCustomSelect({
+            label: '首选画质',
+            options: QUALITY_OPTIONS,
+            value: config.quality.primary,
+            dataset: { category: 'quality', type: 'primary' },
+            layout: 'between',
+            onChange: (e) => this._handleSwap('quality', 'primary', e.target.value, QUALITY_OPTIONS),
+        });
+        const qSecondary = DOM.createCustomSelect({
+            label: '次选画质',
+            options: QUALITY_OPTIONS,
+            value: config.quality.secondary,
+            dataset: { category: 'quality', type: 'secondary' },
+            layout: 'between',
+            onChange: (e) => this._handleSwap('quality', 'secondary', e.target.value, QUALITY_OPTIONS),
+        });
+
+        this.selectRefs['quality_primary'] = qPrimary;
+        this.selectRefs['quality_secondary'] = qSecondary;
+        form.appendChild(this._createSection('偏好画质', [qPrimary, qSecondary]));
+        const codecOpts = [
+            { value: 'av1', label: 'AV1' },
+            { value: 'hevc', label: 'HEVC' },
+            { value: 'avc', label: 'AVC' },
+        ];
+        const cPrimary = DOM.createCustomSelect({
+            label: '首选编码',
+            options: codecOpts,
+            value: config.codec.primary,
+            dataset: { category: 'codec', type: 'primary' },
+            layout: 'between',
+            onChange: (e) => this._handleSwap('codec', 'primary', e.target.value, codecOpts),
+        });
+        const cSecondary = DOM.createCustomSelect({
+            label: '次选编码',
+            options: codecOpts,
+            value: config.codec.secondary,
+            dataset: { category: 'codec', type: 'secondary' },
+            layout: 'between',
+            onChange: (e) => this._handleSwap('codec', 'secondary', e.target.value, codecOpts),
+        });
+
+        this.selectRefs['codec_primary'] = cPrimary;
+        this.selectRefs['codec_secondary'] = cSecondary;
+        form.appendChild(this._createSection('偏好编码', [cPrimary, cSecondary]));
+        const attachItems = [
+            DOM.createSwitch({ label: '视频封面', checked: config.cover, dataset: { key: 'cover' } }),
+            DOM.createSwitch({ label: 'XML弹幕', checked: config.danmaku, dataset: { key: 'danmaku' } }),
+        ];
+
+        form.appendChild(this._createSection('附件下载', attachItems));
+        this._bindEditorEvents(form);
+    }
+
+    _handleSwap(category, changedType, newValue, opts) {
+        const otherType = changedType === 'primary' ? 'secondary' : 'primary';
+        const otherKey = `${category}_${otherType}`;
+        const otherWrapper = this.selectRefs[otherKey];
+        const oldValue = this.editingStrategy.config[category][changedType];
+        const currentOtherValue = this.editingStrategy.config[category][otherType];
+
+        this.editingStrategy.config[category][changedType] = newValue;
+
+        if (newValue === currentOtherValue) {
+            this.editingStrategy.config[category][otherType] = oldValue;
+            this._updateSelectUI(otherWrapper, oldValue, opts);
+        }
+    }
+
+    _updateSelectUI(wrapper, value, options) {
+        if (!wrapper) return;
+        const trigger = wrapper.querySelector('.ud-select-trigger');
+
+        if (!trigger) return;
+        trigger.value = value;
+        const opt = options.find((o) => o.value === value);
+        const label = opt ? opt.label : value;
+
+        trigger.innerHTML = `\n            <div class="ud-select-value">${label}</div>\n            <div class="ud-select-arrow">${window.Icons.chevron}</div>\n        `;
+    }
+
+    _createSection(title, items) {
+        const DOM = window.DOMUtils;
+        const section = DOM.create('div', 'ud-settings-section');
+
+        if (title) {
+            section.appendChild(DOM.create('div', 'ud-form-header', title));
+        }
+
+        items.forEach((item) => {
+            section.appendChild(item);
+        });
+
+        return section;
+    }
+
+    _bindEditorEvents(form) {
+        const vCb = form.querySelector('input[data-key="video"]');
+        const aCb = form.querySelector('input[data-key="audio"]');
+        const mCb = form.querySelector('input[data-key="merge"]');
+        const mRow = form.querySelector('#row-merge');
+
+        const checkMerge = () => {
+            if (!vCb || !aCb) return;
+            const can = vCb.checked && aCb.checked;
+
+            if (!can) {
+                if (mCb) {
+                    mCb.checked = false;
+                    mCb.disabled = true;
+                }
+
+                if (mRow) {
+                    mRow.classList.add('disabled');
+                    mRow.style.opacity = '0.5';
+                }
+            } else {
+                if (mCb) mCb.disabled = false;
+
+                if (mRow) {
+                    mRow.classList.remove('disabled');
+                    mRow.style.opacity = '1';
+                }
+            }
+        };
+
+        if (vCb) vCb.onchange = checkMerge;
+        if (aCb) aCb.onchange = checkMerge;
+    }
+
+    async _handleDelete(st) {
+        if (this.strategies.length <= 1) {
+            if (this.modal && this.modal.showToast) {
+                this.modal.showToast('请至少保留一个下载策略');
+            }
+
+            return;
+        }
+
+        const easterEggKeywords = ['crychic', '苦来兮苦'];
+        const isEasterEgg = easterEggKeywords.includes(st.name.toLowerCase());
+        const confirmTitle = isEasterEgg ? '解散乐队' : '删除策略';
+        const confirmContent = isEasterEgg ? `确定要解散${st.name}吗？` : `确定要删除下载策略：${st.name}吗？`;
+
+        if (window.ConfirmModal) {
+            const ok = await window.ConfirmModal.showModal({
+                title: confirmTitle,
+                content: confirmContent,
+                isDanger: true,
+                confirmText: '确定',
+            });
+
+            if (!ok) return;
+        } else if (!confirm(confirmContent)) {
+            return;
+        }
+
+        this.strategies = this.strategies.filter((s) => s.id !== st.id);
+        this._saveStrategies();
+        chrome.runtime.sendMessage({ type: 'STRATEGIES_UPDATED' }).catch(() => {});
+
+        if (this.viewMode === 'edit') {
+            this.viewMode = 'list';
+        }
+
+        this.render();
+    }
+
+    _renderList() {
+        this.dom.content.innerHTML = '';
+        const DOM = window.DOMUtils;
+
+        this._renderHeaderUI({
+            title: '下载策略',
+            rightBtn: {
+                text: '新建策略',
+                icon: window.Icons.plus,
+                type: 'settings-normal',
+                onClick: () => {
+                    if (this.strategies.length >= 20) {
+                        if (this.modal && this.modal.showToast) {
+                            this.modal.showToast('下载策略数量已达到上限');
+                        }
+
+                        return;
+                    }
+
+                    const newSt = window.Strategies.createNewStrategy();
+
+                    this._enterEditMode(newSt, true);
+                },
+            },
+        });
+        this.strategies.forEach((st) => {
+            const card = DOM.create('div', 'ud-strategy-card');
+            const stTitle = DOM.create('div', 'ud-st-title', st.name);
+            const tagsRow = DOM.create('div');
+
+            tagsRow.style.display = 'flex';
+            tagsRow.style.flexWrap = 'wrap';
+            tagsRow.style.gap = '6px';
+            const tags = this._generateTags(st.config);
+
+            tags.forEach((t) => {
+                const tagEl = DOM.create('span', 'ud-tag', t);
+
+                tagsRow.appendChild(tagEl);
+            });
+            card.appendChild(stTitle);
+            card.appendChild(tagsRow);
+            const actionBtn = DOM.create('div', 'ud-st-action-trigger');
+
+            actionBtn.innerHTML = window.Icons.ellipsis || '...';
+
+            actionBtn.onclick = (e) => {
+                e.stopPropagation();
+                this._showStrategyMenu(actionBtn, st);
+            };
+
+            card.appendChild(actionBtn);
+            card.onclick = null;
+            card.style.cursor = 'default';
+            this.dom.content.appendChild(card);
+        });
+    }
+
+    _generateTags(cfg) {
+        if (!cfg) return [];
+        const tags = [];
+        const {
+            video: video,
+            audio: audio,
+            merge: merge,
+            cover: cover,
+            danmaku: danmaku,
+            codec: codec,
+            quality: quality,
+        } = cfg;
+
+        if (!video && !audio && !cover && !danmaku) {
+            tags.push('空壳任务');
+        } else {
+            if (video && audio && merge) {
+                tags.push('完整视频');
+            } else if (video && !audio) {
+                tags.push('视频流');
+            } else if (!video && audio) {
+                tags.push('音频流');
+            } else if (video && audio && !merge) {
+                tags.push('视频流');
+                tags.push('音频流');
+            }
+
+            if (video && quality && quality.primary) {
+                const opt = QUALITY_OPTIONS.find((o) => o.value === quality.primary);
+                const label = opt ? opt.label : quality.primary;
+
+                tags.push(label);
+            }
+
+            if (video && codec && codec.primary) {
+                tags.push(codec.primary.toUpperCase());
+            }
+
+            if (cover) {
+                tags.push('封面');
+            }
+
+            if (danmaku) {
+                tags.push('弹幕');
+            }
+        }
+
+        return tags;
+    }
+
+    _showStrategyMenu(triggerBtn, strategy) {
+        const DOM = window.DOMUtils;
+        const existing = document.querySelector('.ud-floating-menu');
+
+        if (existing) existing.remove();
+        triggerBtn.classList.add('active');
+        const menu = DOM.create('div', 'ud-floating-menu');
+
+        menu.style.minWidth = '110px';
+        const editItem = DOM.create('div', 'ud-menu-item', '编辑');
+
+        editItem.onclick = () => {
+            menu.remove();
+            triggerBtn.classList.remove('active');
+            this._enterEditMode(strategy);
+        };
+
+        menu.appendChild(editItem);
+        const delItem = DOM.create('div', 'ud-menu-item danger', '删除');
+
+        delItem.onclick = () => {
+            menu.remove();
+            triggerBtn.classList.remove('active');
+            this._handleDelete(strategy);
+        };
+
+        menu.appendChild(delItem);
+        document.body.appendChild(menu);
+        const rect = triggerBtn.getBoundingClientRect();
+
+        menu.style.top = `${rect.bottom + 4}px`;
+        menu.style.left = `${rect.right - 110}px`;
+        requestAnimationFrame(() => menu.classList.add('show'));
+
+        const closeHandler = (e) => {
+            if (!menu.contains(e.target) && e.target !== triggerBtn) {
+                menu.remove();
+                triggerBtn.classList.remove('active');
+                window.removeEventListener('mousedown', closeHandler);
+            }
+        };
+
+        setTimeout(() => window.addEventListener('mousedown', closeHandler), 0);
+    }
+
+    async render() {
+        await this._loadStrategies();
+
+        if (this.viewMode === 'list') {
+            this._renderList();
+        } else {
+            this._renderEditor();
+        }
+    }
+
+    async _loadStrategies() {
+        const { STRATEGY_CONSTANTS: STRATEGY_CONSTANTS, DEFAULT_STRATEGIES: DEFAULT_STRATEGIES } = window.Strategies;
+
+        return new Promise((resolve) => {
+            chrome.storage.local.get([STRATEGY_CONSTANTS.STORAGE_KEY], (res) => {
+                const saved = res[STRATEGY_CONSTANTS.STORAGE_KEY];
+
+                this.strategies = saved && saved.length > 0 ? saved : DEFAULT_STRATEGIES;
+                resolve();
+            });
+        });
+    }
+
+    _saveStrategies() {
+        const { STRATEGY_CONSTANTS: STRATEGY_CONSTANTS } = window.Strategies;
+
+        chrome.storage.local.set({ [STRATEGY_CONSTANTS.STORAGE_KEY]: this.strategies });
+    }
+
+    _enterEditMode(strategy, isNew = false) {
+        this.viewMode = 'edit';
+        this.isNewRecord = isNew;
+        this.editingStrategy = JSON.parse(JSON.stringify(strategy));
+        this.originalStrategy = JSON.parse(JSON.stringify(strategy));
+        this._renderEditor();
+    }
+
+    _getFormState(form) {
+        const current = JSON.parse(JSON.stringify(this.editingStrategy));
+        const nameInp = form.querySelector('#inp-name');
+
+        if (nameInp) current.name = nameInp.value;
+        form.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+            const key = cb.dataset.key;
+
+            if (key) current.config[key] = cb.checked;
+        });
+        delete current.description;
+
+        return current;
+    }
+
+    _hasChanges(form) {
+        const current = this._getFormState(form);
+        const original = JSON.parse(JSON.stringify(this.originalStrategy));
+
+        delete original.description;
+
+        return JSON.stringify(current) !== JSON.stringify(original);
+    }
+
+    async _handleBack() {
+        const form = this.dom.content;
+
+        if (this._hasChanges(form)) {
+            let shouldSave = false;
+
+            if (window.ConfirmModal) {
+                shouldSave = await window.ConfirmModal.showModal({
+                    title: '保存策略',
+                    content: '检测到未保存的修改，是否保存？',
+                    confirmText: '保存',
+                    cancelText: '放弃',
+                });
+            } else {
+                shouldSave = confirm('检测到您有未保存的修改，是否保存？');
+            }
+
+            if (shouldSave) {
+                this._handleSave(form);
+            } else {
+                this.viewMode = 'list';
+                this.render();
+            }
+        } else {
+            this.viewMode = 'list';
+            this.render();
+        }
+    }
+
+    async _handleSave(form) {
+        const nameInp = form.querySelector('#inp-name');
+        let rawName = nameInp ? nameInp.value : '';
+
+        if (!this.isNewRecord) {
+            if (!this._hasChanges(form)) {
+                if (this.modal && this.modal.showToast) {
+                    this.modal.showToast('没有修改下载策略');
+                }
+
+                return;
+            }
+        }
+
+        const check = window.Strategies.validateStrategyName(rawName);
+
+        if (!check.valid) {
+            if (this.modal && this.modal.showToast) {
+                this.modal.showToast(check.msg);
+            } else {
+                alert(check.msg);
+            }
+
+            return;
+        }
+
+        const validName = check.name;
+        const isDuplicate = this.strategies.some((s) => s.name === validName && s.id !== this.editingStrategy.id);
+
+        if (isDuplicate) {
+            const msg = '下载策略名称已存在，请使用其他名称';
+
+            if (this.modal && this.modal.showToast) {
+                this.modal.showToast(msg);
+            } else {
+                alert(msg);
+            }
+
+            return;
+        }
+
+        this.editingStrategy.name = validName;
+        delete this.editingStrategy.description;
+        form.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+            const key = cb.dataset.key;
+
+            if (key) this.editingStrategy.config[key] = cb.checked;
+        });
+
+        if (this.isNewRecord) {
+            this.editingStrategy.id = 'custom-' + Date.now();
+            this.strategies.push(this.editingStrategy);
+        } else {
+            const idx = this.strategies.findIndex((s) => s.id === this.editingStrategy.id);
+
+            if (idx !== -1) this.strategies[idx] = this.editingStrategy;
+        }
+
+        this._saveStrategies();
+        chrome.runtime.sendMessage({ type: 'STRATEGIES_UPDATED' }).catch(() => {});
+        this.viewMode = 'list';
+        this.render();
+
+        if (this.modal && this.modal.showToast) {
+            this.modal.showToast('策略保存成功');
+        }
+    }
+}
+window.StrategiesPanel = StrategiesPanel;

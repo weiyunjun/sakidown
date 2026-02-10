@@ -1,0 +1,154 @@
+<!--
+* @file manager/manager.html
+* @description 任务管理面板宿主页 (Task Manager Dashboard Host)
+* * 核心职责 (Core Responsibilities):
+* 1. 布局架构 (Layout Architecture):
+* * 构建经典的 "侧边栏 (Sidebar) + 顶栏 (Header) + 内容区 (Main)" 后台管理布局。
+* * 定义 `ud-view-section` 视图容器，支持 "队列"、"已完成"、"未完成" 三种状态的切换显示。
+* * 2. 资源加载与初始化 (Resource Loading & Initialization):
+* * 作为 SPA (单页应用) 的入口，按依赖顺序加载 UI 库、IndexedDB (`db.js`)、设置面板组件及核心控制器 (`manager.js`)。
+* * 引入 `theme.css`, `components.css`, `layouts.css` 构建完整的样式体系。
+* * 3. 防闪烁机制 (Anti-FOUC Mechanism):
+* * 利用 `body.preload` 类和内联 `&lt;style id="anti-fouc"&gt;`，在 JS 应用主题色前强制隐藏页面内容，防止出现样式闪烁。
+* * @author weiyunjun
+* @version v0.1.0
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务管理</title>
+    <link rel="stylesheet" href="../ui/theme.css">
+    <link rel="stylesheet" href="../ui/components.css">
+    <link rel="stylesheet" href="../ui/layouts.css">
+
+    <style id="anti-fouc">
+        body.preload {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        body.preload * {
+            transition: none !important;
+        }
+    </style>
+</head>
+    <body class="preload">
+        <div class="ud-layout-manager">
+            <aside class="ud-sidebar-collapsible" id="app-sidebar">
+                <div class="ud-sidebar-header">
+                    <div class="ud-sidebar-icon-lg" id="sidebar-header-icon"></div>
+                    <div class="ud-sidebar-title">任务管理</div>
+                </div>
+                
+                <div class="ud-sidebar-nav-list">
+                    <button class="ud-nav-btn active" data-target="view-downloading" id="nav-btn-queue">
+                        <div class="ud-nav-icon" data-icon="download"></div>
+                        <span class="ud-nav-text">队列中</span>
+                        <span class="ud-nav-badge">0</span>
+                    </button>
+                    <button class="ud-nav-btn" data-target="view-completed" id="nav-btn-history">
+                        <div class="ud-nav-icon" data-icon="history"></div>
+                        <span class="ud-nav-text">已完成</span>
+                        <span class="ud-nav-badge">0</span>
+                    </button>
+                    <button class="ud-nav-btn" data-target="view-incomplete" id="nav-btn-incomplete">
+                        <div class="ud-nav-icon" data-icon="alert"></div>
+                        <span class="ud-nav-text">未完成</span>
+                        <span class="ud-nav-badge">0</span>
+                    </button>
+
+                    <div class="ud-sidebar-footer">
+                        <button class="ud-sidebar-btn btn-settings" id="nav-btn-settings">
+                            <div class="ud-nav-icon" data-icon="settings"></div>
+                            <span class="ud-nav-text">设置</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="ud-right-panel">
+                <header class="ud-main-header">
+                    <div class="ud-row-layout">
+                        <div class="ud-col-side left">
+                            <div class="ud-icon-btn" id="btn-toggle-sidebar" data-ud-tooltip="折叠/展开"></div>
+                            
+                            <button id="btn-batch-manage" class="ud-icon-btn" data-ud-tooltip="批量管理">
+                                <div data-icon="batch_check"></div>
+                            </button>
+                        </div>
+
+                        <div class="ud-col-center">
+                            <div class="ud-header-flex-wrapper">
+                                <div class="ud-batch-checkbox-wrapper">
+                                    <input type="checkbox" id="header-batch-checkbox" class="ud-checkbox">
+                                </div>
+
+                                <div id="header-batch-actions" class="ud-batch-actions-wrapper"></div>
+
+                                <div class="ud-search-wrapper" id="header-search-container">
+                                    <div class="ud-search-icon" id="header-search-icon-slot"></div>
+                                    
+                                    <input id="header-search-input" type="text" class="ud-input" placeholder="搜索标题/UP主..." autocomplete="off">
+                                    
+                                    <div class="ud-search-clear" id="header-search-clear" data-ud-tooltip="清空搜索栏">
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ud-col-side right"></div>
+                    </div>
+                </header>
+
+                <main class="ud-main-content" id="main-content-scroll">
+                    <div class="ud-row-layout">
+                        <div class="ud-col-side left"></div>
+
+                        <div class="ud-col-center">
+                            <div id="search-stats-bar" class="ud-search-stats">
+                            </div>
+
+                            <div id="view-downloading" class="ud-view-section active">
+                                <div id="active-task-container"></div>
+                                <div id="queue-list-container"></div>
+                            </div>
+
+                            <div id="view-completed" class="ud-view-section">
+                                <div id="history-list"></div>
+                                <div id="history-empty" class="ud-empty-state">暂无已完成任务</div>
+                            </div>
+
+                            <div id="view-incomplete" class="ud-view-section">
+                                <div id="incomplete-list"></div>
+                                <div id="incomplete-empty" class="ud-empty-state">暂无未完成任务</div>
+                            </div>
+
+                            <div id="global-pagination-container" class="ud-pagination-wrapper"></div>
+                        </div>
+
+                        <div class="ud-col-side right"></div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <div id="back-to-top" class="ud-back-to-top" data-ud-tooltip="回到顶部">
+            <div class="icon" data-icon="chevron"></div>
+        </div>
+
+        <script src="../ui/dom-utils.js"></script>
+        <script src="../ui/base-modal.js"></script>
+        <script src="../ui/confirm-modal.js"></script>
+        <script type="module" src="../lib/db.js"></script>
+        <script src="../settings/strategies.js"></script>
+        <script src="../settings/theme.js"></script>
+        <script src="../settings/theme-panel.js"></script>
+        <script src="../settings/general-panel.js"></script>
+        <script src="../settings/strategies-panel.js"></script>
+        <script src="../settings/data-panel.js"></script>
+        <script src="../settings/about-panel.js"></script>
+        <script src="../settings/settings-modal.js"></script>
+        <script src="manager.js" type="module"></script>
+    </body>
+</html>

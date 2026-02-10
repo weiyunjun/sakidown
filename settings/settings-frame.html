@@ -1,0 +1,37 @@
+<!--
+* @file settings/settings-frame.html
+* @description 设置页面 Iframe 宿主 (Settings Iframe Host)
+* * 核心职责 (Core Responsibilities):
+* 1. 独立运行环境 (Isolated Execution Environment):
+* * 为设置面板提供洁净的 DOM 环境，通过 Iframe 隔离，防止与宿主页面 (Content Script 或 Manager) 发生 CSS/JS 冲突。
+* * 2. 模块聚合 (Module Aggregation):
+* * 集中加载所有设置相关的子面板脚本 (`GeneralPanel`, `ThemePanel`, `StrategiesPanel`) 和数据模型。
+* * 提供 `ud-settings-body` 容器，供 `SettingsModal` 类挂载 UI 结构。
+* * @author weiyunjun
+* @version v0.1.0
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+    <link rel="stylesheet" href="../ui/theme.css">
+    <link rel="stylesheet" href="../ui/components.css">
+    <link rel="stylesheet" href="../ui/layouts.css">
+    </head>
+<body class="ud-settings-body">
+    <script src="../ui/dom-utils.js"></script>
+    <script src="../ui/base-modal.js"></script>
+    <script src="../ui/confirm-modal.js"></script>
+    <script type="module" src="../lib/db.js"></script>
+    <script src="strategies.js"></script>
+    <script src="theme.js"></script>
+    <script src="theme-panel.js"></script>
+    <script src="general-panel.js"></script>
+    <script src="strategies-panel.js"></script>
+    <script src="data-panel.js"></script>
+    <script src="about-panel.js"></script>
+    <script src="settings-modal.js"></script>
+    <script src="settings-main.js"></script>
+</body>
+</html>

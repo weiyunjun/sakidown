@@ -1,0 +1,20 @@
+<!--
+ * @file background/offscreen.html
+ * @description Offscreen 宿主页面 (Offscreen Host Document)
+ * * 核心职责 (Core Responsibilities):
+ * 1. 运行环境宿主 (Execution Environment Host):
+ * - 为 `offscreen.js` 提供标准的 DOM/BOM 环境。
+ * - 使得扩展能够在后台访问 `Audio` API (播放音效) 和 `Worker` API (运行 IO 线程)，这在纯 Service Worker 环境中是受限的。
+ * * @author weiyunjun
+ * @version v0.1.0
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SakiDown IO Host</title>
+  </head>
+  <body>
+    <script src="offscreen.js" type="module"></script>
+  </body>
+</html>
