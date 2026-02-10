@@ -1,7 +1,5 @@
-![Version](https://img.shields.io/badge/version-v0.1.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Chrome](https://img.shields.io/badge/Chrome-Manifest_V3-yellow)
-
-## SakiDown
 ![SakiDown_Banner](./assets/SakiDown_Banner.png)
+![Version](https://img.shields.io/badge/version-v0.1.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Chrome](https://img.shields.io/badge/Chrome-Manifest_V3-yellow)
 
 **SakiDown**是一个基于Chrome Manifest V3标准的哔哩哔哩视频下载和管理插件。
 1. **流式合并算法**：采用原生JavaScript实现了DASH音视频流的解封装与无损合并，配合OPFS存储技术，解决了ffmpeg.wasm在合并大文件时遇到的内存墙问题。
@@ -51,7 +49,7 @@ git pull
   - 点击视频页面左下方的下载按钮。
   - 在浏览器地址栏点击插件图标，在弹出的页面中点击下载视频选项。
 #### 3. 选择下载内容
-![download](/assets/download.png)
+![download](./assets/download.png)
 - **默认选择**：会勾选当前页面的视频，插件初始会默认下载最佳画质的视频，不下载封面，不下载弹幕。
 - **批量选择**：在弹出的列表中，勾选你想要下载的视频。支持列表顶部的一键全选。
 - **策略切换**：在列表底部，你可以快速切换“下载策略”（例如：仅下载音频、最佳画质等）。关于策略的详细配置见下文。
@@ -59,7 +57,7 @@ git pull
 - 在开始下载后，页面底部会出现一个通知横幅，你可以点击横幅的任务管理按钮，进入任务管理界面，掌控下载进度和更多内容。
 - 下载会自动在后台完成，不需要保持当前网页开启（只需要保证浏览器开启）。
 #### 5. 任务管理
-![manager](/assets/manager.png)
+![manager](./assets/manager.png)
 - 打开任务管理后，在左侧有3个标签页：
   - **队列中**：当前正在下载以及等待下载的任务。你可以查看视频信息、下载状态、下载速度等信息，也可以手动取消任务。
   - **已完成**：以及完成的任务。你可以点击标题播放视频/音频，打开up主的主页，复制视频链接，打开视频所在文件夹。
