@@ -765,7 +765,7 @@ export class BilibiliAdapter {
         let apiUrl = 'https://api.bilibili.com/pugv/view/web/season?';
 
         if (requestId && type === 'epId') {
-            apiUrl += `ep_id=${ep_id}`;
+            apiUrl += `ep_id=${requestId}`;
         } else if (requestId && type === 'ssId') {
             apiUrl += `season_id=${requestId}`;
         } else {
