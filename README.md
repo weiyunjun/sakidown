@@ -19,6 +19,9 @@ git clone https://github.com/weiyunjun/sakidown.git
 #### 方法二：点击下载
 在GitHub页面点击Code -> Download ZIP下载并解压。
 
+#### 方法三：release版
+在GitHub页面点击Releases，选择你需要的版本。
+
 ### 2. 在浏览器中加载
 本项目基于原生JavaScript开发，**开箱即用**，无需任何构建流程。
 
@@ -43,7 +46,9 @@ git pull
 然后在浏览器的扩展管理页面点击刷新或更新图标即可。
 
 ### 方法二：重新下载
-删除旧文件夹，重新下载并解压到原文件夹（需要确保文件夹名称一致，否则不会被Chrome视为同一个插件）。
+删除旧文件夹，重新下载zip包或release的zip包并解压到原文件夹（需要确保文件夹名称一致，否则不会被Chrome视为同一个插件）。
+
+**默认文件夹名称**：sakidown-main
 
 ### 注意事项
 - 更新插件或者日常使用时，请不要移除插件，移除操作会直接清空插件数据！
