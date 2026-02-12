@@ -1,0 +1,9 @@
+# .gitattributes
+.gitignore          export-ignore
+.gitattributes      export-ignore
+README.md           export-ignore
+assets/download.png export-ignore
+assets/manager.png export-ignore
+assets/SakiDown_Banner.png export-ignore
+docs/               export-ignore
+_metadata/               export-ignore
