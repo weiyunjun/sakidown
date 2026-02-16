@@ -57,6 +57,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
+    gap: 12px;
 }
 
 /* [新增] 顶部对齐模式 (用于包含长说明文字的行) */
@@ -101,7 +102,6 @@
     gap: 8px;
     justify-content: flex-end;
     flex-shrink: 0;
-    margin-left: 24px;
 }
 
 /* 当控件在行内控件组中时，移除底部间距 */

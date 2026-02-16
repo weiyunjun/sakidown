@@ -20,19 +20,6 @@
  * @version v0.1.0
  */
 
-const QUALITY_OPTIONS = [
-    { value: 'best', label: '最佳画质' },
-    { value: '8k', label: '8K' },
-    { value: 'dolby', label: '杜比视界' },
-    { value: 'hdr', label: 'HDR' },
-    { value: '4k', label: '4K' },
-    { value: '1080p', label: '1080P' },
-    { value: '720p', label: '720P' },
-    { value: '480p', label: '480P' },
-    { value: '360p', label: '360P' },
-    { value: '240p', label: '240P' },
-];
-
 class StrategiesPanel {
     constructor(headerContainer, contentContainer, modal) {
         this.dom = { header: headerContainer, content: contentContainer };
@@ -41,7 +28,7 @@ class StrategiesPanel {
         this.viewMode = 'list';
         this.editingStrategy = null;
         this.isNewRecord = false;
-        this.selectRefs = {};
+        this.formBuilder = null;
     }
 
     _renderHeaderUI({ title: title, leftBtn: leftBtn, rightBtn: rightBtn } = {}) {
@@ -81,204 +68,44 @@ class StrategiesPanel {
 
     _renderEditor() {
         this.dom.content.innerHTML = '';
-        const DOM = window.DOMUtils;
-        const st = this.editingStrategy;
-        const config = st.config || {};
-
+        
+        // 1. 渲染头部
         this._renderHeaderUI({
             title: this.isNewRecord ? '新建策略' : '编辑策略',
-            leftBtn: { text: '', icon: window.Icons.chevron, className: 'ud-btn-back', onClick: () => this._handleBack() },
+            leftBtn: { 
+                text: '', 
+                icon: window.Icons.chevron, 
+                className: 'ud-btn-back', 
+                onClick: () => this._handleBack() 
+            },
             rightBtn: {
                 text: '保存策略',
                 type: 'settings-normal',
                 icon: window.Icons.save,
-                onClick: () => this._handleSave(this.dom.content),
+                onClick: () => this._handleSave(),
             },
         });
-        const form = this.dom.content;
-        const basicItems = [
-            DOM.createInput({
-                id: 'inp-name',
-                value: this.isNewRecord ? '' : st.name,
-                placeholder: this.isNewRecord ? '请输入策略名称...' : '请输入策略名称',
-            }),
-        ];
 
-        form.appendChild(this._createSection('策略名称', basicItems));
-        const canMerge = config.video && config.audio;
-        const videoSwitch = DOM.createSwitchInput({ 
-            checked: config.video, 
-            dataset: { key: 'video' } 
-        });
-        const videoRow = DOM.createFormRow({ label: '下载视频画面', content: videoSwitch });
+        // 2. 初始化 FormBuilder
+        if (window.FormBuilder && window.Strategies && window.Strategies.STRATEGY_SCHEMA) {
+            this.formBuilder = new window.FormBuilder(
+                window.Strategies.STRATEGY_SCHEMA, 
+                this.editingStrategy
+            );
 
-        const audioSwitch = DOM.createSwitchInput({ 
-            checked: config.audio, 
-            dataset: { key: 'audio' } 
-        });
-        const audioRow = DOM.createFormRow({ label: '下载音频轨道', content: audioSwitch });
+            // 3. 挂载生成的 DOM
+            this.dom.content.appendChild(this.formBuilder.render());
 
-        const mergeSwitch = DOM.createSwitchInput({
-            checked: config.merge,
-            disabled: !canMerge,
-            dataset: { key: 'merge' },
-            onChange: (checked) => {
-                const row = form.querySelector('#row-merge');
-                const switchInput = row.querySelector('input');
-                if (switchInput.disabled) return;
-            },
-        });
-        
-        const mergeRow = DOM.createFormRow({ 
-            label: '合并音视频', 
-            note: '将视频和音频流合并为单个文件',
-            content: mergeSwitch 
-        });
-        mergeRow.id = 'row-merge';
-        if (!canMerge) mergeRow.classList.add('disabled');
-
-        const streamItems = [videoRow, audioRow, mergeRow];
-
-        form.appendChild(this._createSection('流媒体下载', streamItems));
-        this.selectRefs = {};
-        const qPrimary = DOM.createCustomSelect({
-            label: '首选画质',
-            options: QUALITY_OPTIONS,
-            value: config.quality.primary,
-            dataset: { category: 'quality', type: 'primary' },
-            layout: 'between',
-            onChange: (e) => this._handleSwap('quality', 'primary', e.target.value, QUALITY_OPTIONS),
-        });
-        const qSecondary = DOM.createCustomSelect({
-            label: '次选画质',
-            options: QUALITY_OPTIONS,
-            value: config.quality.secondary,
-            dataset: { category: 'quality', type: 'secondary' },
-            layout: 'between',
-            onChange: (e) => this._handleSwap('quality', 'secondary', e.target.value, QUALITY_OPTIONS),
-        });
-
-        this.selectRefs['quality_primary'] = qPrimary;
-        this.selectRefs['quality_secondary'] = qSecondary;
-        form.appendChild(this._createSection('偏好画质', [qPrimary, qSecondary]));
-        const codecOpts = [
-            { value: 'av1', label: 'AV1' },
-            { value: 'hevc', label: 'HEVC' },
-            { value: 'avc', label: 'AVC' },
-        ];
-        const cPrimary = DOM.createCustomSelect({
-            label: '首选编码',
-            options: codecOpts,
-            value: config.codec.primary,
-            dataset: { category: 'codec', type: 'primary' },
-            layout: 'between',
-            onChange: (e) => this._handleSwap('codec', 'primary', e.target.value, codecOpts),
-        });
-        const cSecondary = DOM.createCustomSelect({
-            label: '次选编码',
-            options: codecOpts,
-            value: config.codec.secondary,
-            dataset: { category: 'codec', type: 'secondary' },
-            layout: 'between',
-            onChange: (e) => this._handleSwap('codec', 'secondary', e.target.value, codecOpts),
-        });
-
-        this.selectRefs['codec_primary'] = cPrimary;
-        this.selectRefs['codec_secondary'] = cSecondary;
-        form.appendChild(this._createSection('偏好编码', [cPrimary, cSecondary]));
-        const coverSwitch = DOM.createSwitchInput({ 
-            checked: config.cover, 
-            dataset: { key: 'cover' } 
-        });
-        const coverRow = DOM.createFormRow({ label: '视频封面', content: coverSwitch });
-
-        const danmakuSwitch = DOM.createSwitchInput({ 
-            checked: config.danmaku, 
-            dataset: { key: 'danmaku' } 
-        });
-        const danmakuRow = DOM.createFormRow({ label: 'XML弹幕', content: danmakuSwitch });
-
-        const attachItems = [coverRow, danmakuRow];
-
-        form.appendChild(this._createSection('附件下载', attachItems));
-        this._bindEditorEvents(form);
-    }
-
-    _handleSwap(category, changedType, newValue, opts) {
-        const otherType = changedType === 'primary' ? 'secondary' : 'primary';
-        const otherKey = `${category}_${otherType}`;
-        const otherWrapper = this.selectRefs[otherKey];
-        const oldValue = this.editingStrategy.config[category][changedType];
-        const currentOtherValue = this.editingStrategy.config[category][otherType];
-
-        this.editingStrategy.config[category][changedType] = newValue;
-
-        if (newValue === currentOtherValue) {
-            this.editingStrategy.config[category][otherType] = oldValue;
-            this._updateSelectUI(otherWrapper, oldValue, opts);
+            // 4. (可选) 监听变更，实时同步 editingStrategy，防止 _handleBack 检测失效
+            this.formBuilder.onChange((newData) => {
+                this.editingStrategy = newData;
+            });
+        } else {
+            this.dom.content.innerHTML = '<div class="ud-panel-placeholder">FormBuilder 或 Schema 加载失败</div>';
         }
     }
 
-    _updateSelectUI(wrapper, value, options) {
-        if (!wrapper) return;
-        const trigger = wrapper.querySelector('.ud-select-trigger');
 
-        if (!trigger) return;
-        trigger.value = value;
-        const opt = options.find((o) => o.value === value);
-        const label = opt ? opt.label : value;
-
-        trigger.innerHTML = `\n            <div class="ud-select-value">${label}</div>\n            <div class="ud-select-arrow">${window.Icons.chevron}</div>\n        `;
-    }
-
-    _createSection(title, items) {
-        const DOM = window.DOMUtils;
-        const section = DOM.create('div', 'ud-settings-section');
-
-        if (title) {
-            section.appendChild(DOM.create('div', 'ud-form-header', title));
-        }
-
-        items.forEach((item) => {
-            section.appendChild(item);
-        });
-
-        return section;
-    }
-
-    _bindEditorEvents(form) {
-        const vCb = form.querySelector('input[data-key="video"]');
-        const aCb = form.querySelector('input[data-key="audio"]');
-        const mCb = form.querySelector('input[data-key="merge"]');
-        const mRow = form.querySelector('#row-merge');
-
-        const checkMerge = () => {
-            if (!vCb || !aCb) return;
-            const can = vCb.checked && aCb.checked;
-
-            if (!can) {
-                if (mCb) {
-                    mCb.checked = false;
-                    mCb.disabled = true;
-                }
-
-                if (mRow) {
-                    mRow.classList.add('disabled');
-                    mRow.style.opacity = '0.5';
-                }
-            } else {
-                if (mCb) mCb.disabled = false;
-
-                if (mRow) {
-                    mRow.classList.remove('disabled');
-                    mRow.style.opacity = '1';
-                }
-            }
-        };
-
-        if (vCb) vCb.onchange = checkMerge;
-        if (aCb) aCb.onchange = checkMerge;
-    }
 
     async _handleDelete(st) {
         if (this.strategies.length <= 1) {
@@ -508,25 +335,13 @@ class StrategiesPanel {
         this._renderEditor();
     }
 
-    _getFormState(form) {
-        const current = JSON.parse(JSON.stringify(this.editingStrategy));
-        const nameInp = form.querySelector('#inp-name');
-
-        if (nameInp) current.name = nameInp.value;
-        form.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
-            const key = cb.dataset.key;
-
-            if (key) current.config[key] = cb.checked;
-        });
-        delete current.description;
-
-        return current;
-    }
-
-    _hasChanges(form) {
-        const current = this._getFormState(form);
+    _hasChanges() {
+        if (!this.formBuilder) return false;
+        const current = JSON.parse(JSON.stringify(this.formBuilder.getData()));
         const original = JSON.parse(JSON.stringify(this.originalStrategy));
 
+        // 清理无关字段进行比对
+        delete current.description;
         delete original.description;
 
         return JSON.stringify(current) !== JSON.stringify(original);
@@ -535,7 +350,7 @@ class StrategiesPanel {
     async _handleBack() {
         const form = this.dom.content;
 
-        if (this._hasChanges(form)) {
+        if (this._hasChanges()) {
             let shouldSave = false;
 
             if (window.ConfirmModal) {
@@ -562,15 +377,17 @@ class StrategiesPanel {
     }
 
     async _handleSave(form) {
-        const nameInp = form.querySelector('#inp-name');
-        let rawName = nameInp ? nameInp.value : '';
+        if (!this.formBuilder) return;
+        
+        // 1. 获取最新数据
+        this.editingStrategy = this.formBuilder.getData();
+        const rawName = this.editingStrategy.name || '';
 
         if (!this.isNewRecord) {
-            if (!this._hasChanges(form)) {
+            if (!this._hasChanges()) {
                 if (this.modal && this.modal.showToast) {
                     this.modal.showToast('没有修改下载策略');
                 }
-
                 return;
             }
         }
@@ -604,11 +421,6 @@ class StrategiesPanel {
 
         this.editingStrategy.name = validName;
         delete this.editingStrategy.description;
-        form.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
-            const key = cb.dataset.key;
-
-            if (key) this.editingStrategy.config[key] = cb.checked;
-        });
 
         if (this.isNewRecord) {
             this.editingStrategy.id = 'custom-' + Date.now();

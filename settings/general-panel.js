@@ -45,86 +45,36 @@ class GeneralPanel {
         this.dom.content.innerHTML = '';
         const DOM = window.DOMUtils;
 
+        // 1. 渲染 Header
         this.dom.header.innerHTML = '';
         const leftGroup = DOM.create('div', 'ud-settings-header-left');
         const titleEl = DOM.create('span', 'ud-panel-title', '通用');
 
         leftGroup.appendChild(titleEl);
         this.dom.header.appendChild(leftGroup);
-        const form = this.dom.content;
-        const downloadSection = DOM.create('div', 'ud-settings-section');
 
-        downloadSection.appendChild(DOM.create('div', 'ud-form-header', '下载设置'));
-        const quickSwitch = DOM.createSwitchInput({
-            checked: this.config.show_quick_button,
-            onChange: (checked) => {
-                this.config.show_quick_button = checked;
-                this._saveConfig('show_quick_button');
-            },
-        });
+        // 2. 初始化 FormBuilder
+        if (window.FormBuilder && window.GeneralConfig && window.GeneralConfig.GENERAL_SCHEMA) {
+            this.formBuilder = new window.FormBuilder(
+                window.GeneralConfig.GENERAL_SCHEMA, 
+                this.config
+            );
 
-        const quickBtnRow = DOM.createFormRow({
-            label: '视频页面显示下载按钮',
-            note: '在播放页左下角显示快速下载入口',
-            content: quickSwitch
-        });
+            // 3. 监听变更实现“立即保存”
+            this.formBuilder.onChange((newData) => {
+                // 简单的 Diff 逻辑：找出变化了的 key 并保存
+                Object.keys(newData).forEach(key => {
+                    if (newData[key] !== this.config[key]) {
+                        this.config[key] = newData[key];
+                        this._saveConfig(key);
+                    }
+                });
+            });
 
-        downloadSection.appendChild(quickBtnRow);
-        const intervalRow = this._createNumberRow({
-            label: '任务间隔',
-            value: this.config.task_interval,
-            min: 0,
-            max: 60,
-            defaultValue: 5,
-            suffix: '秒',
-            note: '前一个任务结束后，下一个任务需要等待的时间',
-            onChange: (val) => {
-                this.config.task_interval = parseInt(val, 10);
-                this._saveConfig('task_interval');
-            },
-        });
-
-        downloadSection.appendChild(intervalRow);
-        form.appendChild(downloadSection);
-    }
-
-    _createNumberRow({
-        label: label,
-        value: value,
-        min: min,
-        max: max,
-        defaultValue: defaultValue,
-        suffix: suffix,
-        note: note,
-        onChange: onChange,
-    }) {
-        const DOM = window.DOMUtils;
-        const rowClassName = note ? 'ud-form-row flex-between align-start' : 'ud-form-row flex-between';
-        const row = DOM.create('div', rowClassName);
-        const labelGroup = DOM.createLabelGroup({ label: label, note: note });
-
-        row.appendChild(labelGroup);
-        const rightContainer = DOM.create('div', 'ud-form-controls');
-        const inputWrapper = DOM.createInput({
-            type: 'number',
-            value: value,
-            min: min,
-            max: max,
-            defaultValue: defaultValue,
-            onChange: onChange,
-        });
-
-        rightContainer.appendChild(inputWrapper);
-
-        if (suffix) {
-            const suffixEl = DOM.create('span', 'ud-form-suffix', suffix);
-
-            rightContainer.appendChild(suffixEl);
+            this.dom.content.appendChild(this.formBuilder.render());
+        } else {
+            this.dom.content.innerHTML = '<div class="ud-panel-placeholder">GeneralConfig 模块未加载</div>';
         }
-
-        row.appendChild(rightContainer);
-
-        return row;
     }
 
     _saveConfig(key) {

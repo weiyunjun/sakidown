@@ -167,8 +167,7 @@ class ThemePanel {
         const soundSection = DOM.create('div', 'ud-settings-section');
 
         soundSection.appendChild(DOM.create('div', 'ud-form-header', '任务完成音效'));
-        soundSection.appendChild(DOM.create('div', 'ud-form-header', '任务完成音效'));
-
+        
         const soundSwitch = DOM.createSwitchInput({
             checked: this.soundConfig.enabled,
             onChange: (checked) => {

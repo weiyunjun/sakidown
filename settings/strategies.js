@@ -19,6 +19,126 @@
  */
 
 const STRATEGY_CONSTANTS = { DEFAULT_ID: 'default-best-video', STORAGE_KEY: 'downloadStrategies' };
+
+const QUALITY_OPTIONS = [
+    { value: 'best', label: '最佳画质' },
+    { value: '8k', label: '8K' },
+    { value: 'dolby', label: '杜比视界' },
+    { value: 'hdr', label: 'HDR' },
+    { value: '4k', label: '4K' },
+    { value: '1080p', label: '1080P' },
+    { value: '720p', label: '720P' },
+    { value: '480p', label: '480P' },
+    { value: '360p', label: '360P' },
+    { value: '240p', label: '240P' },
+];
+
+const CODEC_OPTIONS = [
+    { value: 'av1', label: 'AV1' },
+    { value: 'hevc', label: 'HEVC' },
+    { value: 'avc', label: 'AVC' },
+];
+
+const STRATEGY_SCHEMA = [
+    {
+        type: 'section',
+        title: '基础信息',
+        children: [
+            {
+                key: 'name',
+                type: 'text',
+                label: '策略名称',
+                placeholder: '请输入策略名称',
+                width: '100%',
+                layout: 'vertical'
+            }
+        ]
+    },
+    {
+        type: 'section',
+        title: '流媒体下载',
+        children: [
+            {
+                key: 'config.video',
+                type: 'switch',
+                label: '下载视频画面'
+            },
+            {
+                key: 'config.audio',
+                type: 'switch',
+                label: '下载音频轨道'
+            },
+            {
+                key: 'config.merge',
+                type: 'switch',
+                label: '合并音视频',
+                note: '将视频和音频流合并为单个文件',
+                disabledIf: (data) => !data.config.video || !data.config.audio
+            }
+        ]
+    },
+    {
+        type: 'section',
+        title: '偏好画质',
+        // 只有开启视频时才显示画质选择
+        showIf: (data) => !!data.config.video,
+        children: [
+            {
+                key: 'config.quality.primary',
+                type: 'select',
+                label: '首选画质',
+                options: QUALITY_OPTIONS,
+                layout: 'between'
+            },
+            {
+                key: 'config.quality.secondary',
+                type: 'select',
+                label: '次选画质',
+                options: QUALITY_OPTIONS,
+                layout: 'between'
+            }
+        ]
+    },
+    {
+        type: 'section',
+        title: '偏好编码',
+        // 只有开启视频时才显示编码选择
+        showIf: (data) => !!data.config.video,
+        children: [
+            {
+                key: 'config.codec.primary',
+                type: 'select',
+                label: '首选编码',
+                options: CODEC_OPTIONS,
+                layout: 'between'
+            },
+            {
+                key: 'config.codec.secondary',
+                type: 'select',
+                label: '次选编码',
+                options: CODEC_OPTIONS,
+                layout: 'between'
+            }
+        ]
+    },
+    {
+        type: 'section',
+        title: '附件下载',
+        children: [
+            {
+                key: 'config.cover',
+                type: 'switch',
+                label: '视频封面'
+            },
+            {
+                key: 'config.danmaku',
+                type: 'switch',
+                label: 'XML弹幕'
+            }
+        ]
+    }
+];
+
 const NAME_CONSTRAINTS = { MAX_LENGTH: 30 };
 const DEFAULT_STRATEGIES = [
     {
@@ -111,7 +231,7 @@ function canMerge(video, audio) {
 function createNewStrategy() {
     return {
         id: 'custom-' + Date.now(),
-        name: '新策略',
+        name: '',
         description: '',
         isSystem: false,
         config: {
@@ -136,4 +256,5 @@ window.Strategies = {
     validateStrategyName: validateStrategyName,
     canMerge: canMerge,
     createNewStrategy: createNewStrategy,
+    STRATEGY_SCHEMA: STRATEGY_SCHEMA,
 };

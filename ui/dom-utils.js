@@ -141,6 +141,11 @@ const DOMUtils = {
     },
     createInput: (options = {}) => {
         const wrapper = document.createElement('div');
+        wrapper.className = 'ud-input-wrapper';
+
+        if (options.width) {
+            wrapper.style.width = options.width;
+        }
 
         if (options.label) {
             const label = document.createElement('div');
@@ -219,6 +224,17 @@ const DOMUtils = {
         }
 
         wrapper.appendChild(input);
+
+        wrapper.setValue = (val) => {
+            input.value = val;
+            input.dispatchEvent(new Event('input'));
+        };
+        wrapper.getValue = () => input.value;
+        wrapper.setDisabled = (disabled) => {
+            input.disabled = disabled;
+            if (disabled) wrapper.classList.add('disabled');
+            else wrapper.classList.remove('disabled');
+        };
 
         return wrapper;
     },
@@ -352,6 +368,21 @@ const DOMUtils = {
             }
 
             trigger.innerHTML = `\n                <div class="ud-select-value">${contentHtml}</div>\n                <div class="ud-select-arrow">${window.Icons.selector}</div>\n            `;
+        };
+
+        wrapper.setValue = (val) => {
+            trigger.value = val;
+            updateTriggerDisplay();
+        };
+        wrapper.getValue = () => trigger.value;
+        wrapper.setDisabled = (disabled) => {
+            if (disabled) {
+                wrapper.classList.add('disabled');
+                container.style.pointerEvents = 'none';
+            } else {
+                wrapper.classList.remove('disabled');
+                container.style.pointerEvents = 'auto';
+            }
         };
 
         updateTriggerDisplay();
@@ -648,6 +679,18 @@ const DOMUtils = {
         
         labelSwitch.appendChild(input);
         labelSwitch.appendChild(slider);
+
+        labelSwitch.setValue = (checked) => {
+            input.checked = !!checked;
+            // 触发 change 以保持一致性
+            input.dispatchEvent(new Event('change'));
+        };
+        labelSwitch.getValue = () => input.checked;
+        labelSwitch.setDisabled = (disabled) => {
+            input.disabled = disabled;
+            if (disabled) labelSwitch.classList.add('disabled');
+            else labelSwitch.classList.remove('disabled');
+        };
         
         return labelSwitch;
     },
@@ -655,6 +698,14 @@ const DOMUtils = {
         
         const wrapper = document.createElement('div');
         wrapper.className = 'ud-form-row';
+
+        // 1. 处理垂直布局容器 (利用 gap 自动处理垂直间距)
+        if (options.layout === 'vertical') {
+            wrapper.style.flexDirection = 'column';
+            wrapper.style.alignItems = 'stretch';
+            wrapper.style.height = 'auto';
+            wrapper.style.padding = '8px 0';
+        }
 
         if (options.alignStart || options.note || options.subLabel) {
             wrapper.classList.add('align-start');
@@ -669,6 +720,12 @@ const DOMUtils = {
 
         const controls = document.createElement('div');
         controls.className = 'ud-form-controls';
+
+        // 2. 垂直布局下 Controls 占满宽度 + 左对齐
+        if (options.layout === 'vertical') {
+            controls.style.width = '100%';
+            controls.style.justifyContent = 'flex-start';
+        }
         
         if (options.content) {
             if (options.content instanceof Node) {
