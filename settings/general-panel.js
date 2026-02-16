@@ -55,14 +55,18 @@ class GeneralPanel {
         const downloadSection = DOM.create('div', 'ud-settings-section');
 
         downloadSection.appendChild(DOM.create('div', 'ud-form-header', '下载设置'));
-        const quickBtnRow = DOM.createSwitch({
-            label: '视频页面显示下载按钮',
-            subLabel: '在播放页左下角显示快速下载入口',
+        const quickSwitch = DOM.createSwitchInput({
             checked: this.config.show_quick_button,
             onChange: (checked) => {
                 this.config.show_quick_button = checked;
                 this._saveConfig('show_quick_button');
             },
+        });
+
+        const quickBtnRow = DOM.createFormRow({
+            label: '视频页面显示下载按钮',
+            note: '在播放页左下角显示快速下载入口',
+            content: quickSwitch
         });
 
         downloadSection.appendChild(quickBtnRow);

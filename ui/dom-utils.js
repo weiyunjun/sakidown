@@ -245,52 +245,6 @@ const DOMUtils = {
 
         return group;
     },
-    createSwitch: (options = {}) => {
-        const wrapper = document.createElement('div');
-
-        wrapper.className = 'ud-form-row';
-
-        if (options.subLabel) {
-            wrapper.classList.add('align-start');
-        }
-
-        if (options.disabled) wrapper.classList.add('disabled');
-        if (options.id) wrapper.id = options.id;
-        const labelGroup = DOMUtils.createLabelGroup({ label: options.label, note: options.subLabel });
-
-        wrapper.appendChild(labelGroup);
-        const controls = document.createElement('div');
-
-        controls.className = 'ud-form-controls';
-        const labelSwitch = document.createElement('label');
-
-        labelSwitch.className = 'ud-switch';
-        const input = document.createElement('input');
-
-        input.type = 'checkbox';
-        if (options.checked) input.checked = true;
-        if (options.disabled) input.disabled = true;
-
-        if (options.dataset) {
-            for (const [k, v] of Object.entries(options.dataset)) {
-                input.dataset[k] = v;
-            }
-        }
-
-        if (options.onChange) {
-            input.onchange = (e) => options.onChange(e.target.checked, e);
-        }
-
-        const slider = document.createElement('span');
-
-        slider.className = 'ud-slider';
-        labelSwitch.appendChild(input);
-        labelSwitch.appendChild(slider);
-        controls.appendChild(labelSwitch);
-        wrapper.appendChild(controls);
-
-        return wrapper;
-    },
     createBadge: (text, type = 'gray') => {
         const span = document.createElement('span');
 
@@ -632,22 +586,24 @@ const DOMUtils = {
     },
     createSlider: (options = {}) => {
         const wrapper = document.createElement('div');
-
         wrapper.className = 'ud-slider-container';
+        
         const input = document.createElement('input');
-
         input.type = 'range';
         input.className = 'ud-slider-input';
+        
         input.min = options.min !== undefined ? options.min : 0;
         input.max = options.max !== undefined ? options.max : 100;
         input.step = options.step || 1;
         input.value = options.value !== undefined ? options.value : 50;
 
+        // 4. 背景渐变逻辑 (JS 控制轨道左蓝右灰)
         const updateBackground = (val) => {
             const min = parseFloat(input.min);
             const max = parseFloat(input.max);
-            const percentage = ((val - min) / (max - min)) * 100;
-
+            const range = max - min || 1; 
+            const percentage = ((val - min) / range) * 100;
+            
             input.style.background = `linear-gradient(to right, var(--primary) 0%, var(--primary) ${percentage}%, var(--input) ${percentage}%, var(--input) 100%)`;
         };
 
@@ -655,17 +611,73 @@ const DOMUtils = {
 
         input.oninput = (e) => {
             const val = e.target.value;
-
             updateBackground(val);
             if (options.onChange) options.onChange(val);
         };
 
         wrapper.appendChild(input);
-
+        
         wrapper.setValue = (newVal) => {
             input.value = newVal;
             updateBackground(newVal);
         };
+
+        return wrapper;
+    },
+    createSwitchInput: (options = {}) => {
+        const labelSwitch = document.createElement('label');
+        labelSwitch.className = 'ud-switch';
+        
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        if (options.checked) input.checked = true;
+        if (options.disabled) input.disabled = true;
+
+        if (options.dataset) {
+            for (const [k, v] of Object.entries(options.dataset)) {
+                input.dataset[k] = v;
+            }
+        }
+
+        if (options.onChange) {
+            input.onchange = (e) => options.onChange(e.target.checked, e);
+        }
+
+        const slider = document.createElement('span');
+        slider.className = 'ud-slider';
+        
+        labelSwitch.appendChild(input);
+        labelSwitch.appendChild(slider);
+        
+        return labelSwitch;
+    },
+    createFormRow: (options = {}) => {
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = 'ud-form-row';
+
+        if (options.alignStart || options.note || options.subLabel) {
+            wrapper.classList.add('align-start');
+        }
+        if (options.className) wrapper.classList.add(options.className);
+
+        const labelGroup = DOMUtils.createLabelGroup({ 
+            label: options.label, 
+            note: options.note || options.subLabel
+        });
+        wrapper.appendChild(labelGroup);
+
+        const controls = document.createElement('div');
+        controls.className = 'ud-form-controls';
+        
+        if (options.content) {
+            if (options.content instanceof Node) {
+                controls.appendChild(options.content);
+            } else if (Array.isArray(options.content)) {
+                options.content.forEach(node => controls.appendChild(node));
+            }
+        }
+        wrapper.appendChild(controls);
 
         return wrapper;
     },
