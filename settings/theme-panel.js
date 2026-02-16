@@ -167,8 +167,9 @@ class ThemePanel {
         const soundSection = DOM.create('div', 'ud-settings-section');
 
         soundSection.appendChild(DOM.create('div', 'ud-form-header', '任务完成音效'));
-        const switchRow = DOM.createSwitch({
-            label: '开启音效',
+        soundSection.appendChild(DOM.create('div', 'ud-form-header', '任务完成音效'));
+
+        const soundSwitch = DOM.createSwitchInput({
             checked: this.soundConfig.enabled,
             onChange: (checked) => {
                 this.soundConfig.enabled = checked;
@@ -176,28 +177,13 @@ class ThemePanel {
             },
         });
 
-        soundSection.appendChild(switchRow);
-        const volumeRow = DOM.create('div', 'ud-form-row flex-between');
-        const volLabel = DOM.create('div', 'ud-form-label', '音量调节');
+        soundSection.appendChild(DOM.createFormRow({
+            label: '开启音效',
+            content: soundSwitch
+        }));
 
-        volumeRow.appendChild(volLabel);
-        const controlsContainer = DOM.create('div', 'ud-form-controls');
-        const sliderWrapper = DOM.createSlider({
-            min: 0,
-            max: 100,
-            value: this.soundConfig.volume,
-            onChange: (val) => {
-                const num = parseInt(val, 10);
-
-                this.soundConfig.volume = num;
-                const inputEl = volInputWrapper.querySelector('input');
-
-                if (inputEl) inputEl.value = num;
-                chrome.storage.local.set({ sound_volume: num / 100 });
-            },
-        });
-
-        sliderWrapper.style.maxWidth = '200px';
+        let sliderWrapper; 
+        
         const volInputWrapper = DOM.createInput({
             type: 'number',
             value: this.soundConfig.volume,
@@ -205,25 +191,40 @@ class ThemePanel {
             max: 100,
             defaultValue: 50,
             onChange: (val) => {
-                const num = parseInt(val, 10);
-
-                if (isNaN(num)) {
-                    sliderWrapper.setValue(0);
-
-                    return;
-                }
+                let num = parseInt(val, 10);
+                if (isNaN(num)) num = 0;
+                if (num < 0) num = 0;
+                if (num > 100) num = 100;
 
                 this.soundConfig.volume = num;
-                sliderWrapper.setValue(num);
+                if (sliderWrapper) sliderWrapper.setValue(num);
+                chrome.storage.local.set({ sound_volume: num / 100 });
+            },
+        });
+        volInputWrapper.classList.add('ud-input-number-sm');
+
+        sliderWrapper = DOM.createSlider({
+            min: 0,
+            max: 100,
+            value: this.soundConfig.volume,
+            onChange: (val) => {
+                const num = parseInt(val, 10);
+                this.soundConfig.volume = num;
+                
+                const inputEl = volInputWrapper.querySelector('input');
+                if (inputEl) inputEl.value = num;
+                
                 chrome.storage.local.set({ sound_volume: num / 100 });
             },
         });
 
-        volInputWrapper.classList.add('ud-input-number-sm');
-        controlsContainer.appendChild(sliderWrapper);
-        controlsContainer.appendChild(volInputWrapper);
-        volumeRow.appendChild(controlsContainer);
-        soundSection.appendChild(volumeRow);
+        sliderWrapper.style.flex = '1';
+        sliderWrapper.style.marginRight = '12px';
+
+        soundSection.appendChild(DOM.createFormRow({
+            label: '音量调节',
+            content: [sliderWrapper, volInputWrapper]
+        }));
         const soundManagerWrapper = DOM.create('div', 'ud-sound-manager-wrapper');
         const actionHeader = DOM.create('div', 'ud-sound-actions-header');
         const soundLabel = DOM.create('div', 'ud-form-label', '音效选择');

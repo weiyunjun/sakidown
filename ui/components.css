@@ -1612,32 +1612,51 @@ input:checked + .ud-slider:before {
     position: relative;
 }
 
+/* --- Slider 基础轨道重置 --- */
 .ud-slider-input {
+    appearance: none;
     width: 100%;
     height: 4px;
     border-radius: 2px;
     background: var(--input);
     outline: none;
-    cursor: pointer;
     margin: 0;
+    padding: 0;
+    border: none !important;
+    box-shadow: none !important;
+    transition: none !important;
 }
 
-/* 滑块按钮 (Thumb) */
+/* 移除 Firefox/IE 等浏览器的默认焦点边框 */
+.ud-slider-input:focus {
+    outline: none;
+    border: none;
+}
+
+/* [修复] 禁止轨道 Hover 变色 */
+.ud-slider-input:hover {
+    background: var(--input); /* 保持原样，JS 渐变会覆盖它 */
+    border: none !important;
+}
+
+/* --- 滑块圆点 (Thumb) --- */
 .ud-slider-input::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: var(--background);
-    border: 2px solid var(--primary);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    cursor: grab;
-    transition: transform 0.1s;
+    background: var(--primary);
+    border: 2px solid var(--background);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.1s ease;
 }
 
+/* 按下状态：放大，但颜色保持不变 */
 .ud-slider-input::-webkit-slider-thumb:active {
     transform: scale(1.1);
-    cursor: grabbing;
+    background: var(--primary);
+    border-color: var(--background);
 }
 
 /* =================================================================

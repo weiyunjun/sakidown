@@ -42,7 +42,7 @@ class AboutPanel {
         icon.src = '../assets/icon.png';
         headerDiv.appendChild(icon);
 
-        const desc = DOM.create('div', 'ud-about-desc', 'SakiDown是一个基于Chrome Manifest V3标准的Bilibili视频下载和管理插件。');
+        const desc = DOM.create('div', 'ud-about-desc', 'SakiDown是一个遵循Chrome Manifest V3标准的哔哩哔哩视频下载和管理插件。基于原生JavaScript开发，无任何外部依赖，开箱即用。');
         headerDiv.appendChild(desc);
 
         section.appendChild(headerDiv);

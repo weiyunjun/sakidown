@@ -106,18 +106,38 @@ class StrategiesPanel {
 
         form.appendChild(this._createSection('策略名称', basicItems));
         const canMerge = config.video && config.audio;
-        const streamItems = [
-            DOM.createSwitch({ label: '下载视频画面', checked: config.video, dataset: { key: 'video' } }),
-            DOM.createSwitch({ label: '下载音频轨道', checked: config.audio, dataset: { key: 'audio' } }),
-            DOM.createSwitch({
-                id: 'row-merge',
-                label: '合并音视频',
-                subLabel: '需同时下载视频和音频',
-                checked: config.merge,
-                disabled: !canMerge,
-                dataset: { key: 'merge' },
-            }),
-        ];
+        const videoSwitch = DOM.createSwitchInput({ 
+            checked: config.video, 
+            dataset: { key: 'video' } 
+        });
+        const videoRow = DOM.createFormRow({ label: '下载视频画面', content: videoSwitch });
+
+        const audioSwitch = DOM.createSwitchInput({ 
+            checked: config.audio, 
+            dataset: { key: 'audio' } 
+        });
+        const audioRow = DOM.createFormRow({ label: '下载音频轨道', content: audioSwitch });
+
+        const mergeSwitch = DOM.createSwitchInput({
+            checked: config.merge,
+            disabled: !canMerge,
+            dataset: { key: 'merge' },
+            onChange: (checked) => {
+                const row = form.querySelector('#row-merge');
+                const switchInput = row.querySelector('input');
+                if (switchInput.disabled) return;
+            },
+        });
+        
+        const mergeRow = DOM.createFormRow({ 
+            label: '合并音视频', 
+            note: '将视频和音频流合并为单个文件',
+            content: mergeSwitch 
+        });
+        mergeRow.id = 'row-merge';
+        if (!canMerge) mergeRow.classList.add('disabled');
+
+        const streamItems = [videoRow, audioRow, mergeRow];
 
         form.appendChild(this._createSection('流媒体下载', streamItems));
         this.selectRefs = {};
@@ -166,10 +186,19 @@ class StrategiesPanel {
         this.selectRefs['codec_primary'] = cPrimary;
         this.selectRefs['codec_secondary'] = cSecondary;
         form.appendChild(this._createSection('偏好编码', [cPrimary, cSecondary]));
-        const attachItems = [
-            DOM.createSwitch({ label: '视频封面', checked: config.cover, dataset: { key: 'cover' } }),
-            DOM.createSwitch({ label: 'XML弹幕', checked: config.danmaku, dataset: { key: 'danmaku' } }),
-        ];
+        const coverSwitch = DOM.createSwitchInput({ 
+            checked: config.cover, 
+            dataset: { key: 'cover' } 
+        });
+        const coverRow = DOM.createFormRow({ label: '视频封面', content: coverSwitch });
+
+        const danmakuSwitch = DOM.createSwitchInput({ 
+            checked: config.danmaku, 
+            dataset: { key: 'danmaku' } 
+        });
+        const danmakuRow = DOM.createFormRow({ label: 'XML弹幕', content: danmakuSwitch });
+
+        const attachItems = [coverRow, danmakuRow];
 
         form.appendChild(this._createSection('附件下载', attachItems));
         this._bindEditorEvents(form);
