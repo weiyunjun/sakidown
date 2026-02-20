@@ -163,7 +163,7 @@ export class BilibiliAdapter {
     }
 
     async sniff() {
-        const isSupported = /\/video\/|\/bangumi\/play\/|\/list\/|\/cheese\/play\//.test(location.pathname);
+        const isSupported = /\/video\/|\/bangumi\/play\/|\/list\/|\/cheese\/play\/|\/festival\//.test(location.pathname);
 
         if (!isSupported) {
             window.postMessage({ source: ADAPTER_NAME, type: 'SNIFF_ERROR', msg: '暂时不支持该页面' }, '*');
@@ -215,7 +215,6 @@ export class BilibiliAdapter {
                 this.syncWbiKeys();
             } else if (path.includes('/list')) {
                 let standardPayload = this.buildPlaylistPayload();
-
                 standardPayload = this.cleanTitle(standardPayload);
                 this.broadcastData(standardPayload);
                 this.syncWbiKeys();
@@ -244,6 +243,11 @@ export class BilibiliAdapter {
                     this.broadcastData(standardPayload);
                     this.syncWbiKeys();
                 }
+            } else if (path.includes('/festival')) {
+                let standardPayload = this.buildFestivalPayload();
+                standardPayload = this.cleanTitle(standardPayload);
+                this.broadcastData(standardPayload);
+                this.syncWbiKeys();
             }
         } catch (e) {
             console.error(`[adapters/bilibili.js] 嗅探流程异常:`, e);
@@ -844,6 +848,65 @@ export class BilibiliAdapter {
         });
 
         return result;
+    }
+
+    buildFestivalPayload() {
+        const state = window.__INITIAL_STATE__;
+        const videoSections = state.videoSections;
+        const targetCid = state.videoInfo.cid;
+        const seasonTitle = state.title;
+        const resultOfVideoSections = videoSections.flatMap((section) =>
+            section.episodes.flatMap((episode, index) => {
+                if (!episode.aid || !episode.bvid || !episode.cid) {
+                    console.error(`第 ${index + 1} 个子元素数据异常：缺少关键参数！`);
+                    return [];
+                }
+
+                let is_current =null;            
+
+                if (episode.cid === targetCid) {
+                    is_current = true;
+                }
+
+                return {
+                    metadata: {
+                        type: 'ugc',
+                        aid: episode.aid,
+                        bvid: episode.bvid,
+                        cid: episode.cid,
+                        ep_id: null,
+                        is_current: is_current,
+                        season_title: seasonTitle,
+                        section_title: section.title,
+                        episode_title: null,
+                        part_title: null,
+                        part_num: 1,
+                        is_multi_part: false,
+                        title: episode.title,
+                        author_mid: episode.author.mid,
+                        author_name: episode.author.name,
+                        author_image: episode.author.face,
+                        author_url: `https://space.bilibili.com/${episode.author.mid}`,
+                        duration: null,
+                        pubdate: null,
+                        page_url: `https://www.bilibili.com/video/${episode.bvid}`,
+                        cover_url: episode.cover,
+                        thumbnail_url: episode.author.face.replace(/^(https?:)?\/\//, 'https://') + '@320w_180h_1c_!web-home-common-cover.avif',
+                        thumbnail_id: episode.bvid,
+                        danmaku_url: `https://comment.bilibili.com/${episode.cid}.xml`,
+                    },
+                    preference: {},
+                    status: {},
+                };
+
+
+
+
+
+
+            }),
+        );
+        return resultOfVideoSections;
     }
 
     _sendFailure(msg) {

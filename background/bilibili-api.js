@@ -251,6 +251,8 @@ export const BilibiliApi = {
                         task.metadata.author_name = candidateTask.metadata.author_name;
                         task.metadata.author_image = candidateTask.metadata.author_image;
                         task.metadata.author_url = candidateTask.metadata.author_url;
+                        task.metadata.duration = candidateTask.metadata.duration;
+                        task.metadata.pubdate = candidateTask.metadata.pubdate;
 
                         break;
                     }
@@ -262,6 +264,7 @@ export const BilibiliApi = {
                 for (const candidateTask of standardPayload) {
                     if (candidateTask.metadata.ep_id === targetEp_id) {
                         task.metadata.duration = candidateTask.metadata.duration;
+                        task.metadata.pubdate = candidateTask.metadata.pubdate;
                         break;
                     }
                 }

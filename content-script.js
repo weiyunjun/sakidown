@@ -80,7 +80,7 @@ async function initQuickButton() {
     }
 
     if (document.getElementById(FAB_HOST_ID)) return;
-    const isSupported = /\/video\/|\/bangumi\/play\/|\/list\/|\/cheese\/play\//.test(location.pathname);
+    const isSupported = /\/video\/|\/bangumi\/play\/|\/list\/|\/cheese\/play\/|\/festival\//.test(location.pathname);
 
     if (!isSupported) return;
     const host = document.createElement('div');

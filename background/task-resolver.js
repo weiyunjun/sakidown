@@ -40,7 +40,7 @@ class TaskResolver {
     }
 
     async _performBackendResolve(task) {
-        if (!task.metadata.author_mid || !task.metadata.duration) {
+        if (!task.metadata.duration || !task.metadata.pubdate) {
             task = await BilibiliApi.fetchMetadata(task);
         }
 
