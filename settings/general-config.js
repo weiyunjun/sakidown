@@ -12,7 +12,18 @@ const GENERAL_SCHEMA = [
                 key: 'show_quick_button',
                 type: 'switch',
                 label: '视频页面显示下载按钮',
-                note: '在播放页显示快速下载入口，位置可在「个性化」中调整'
+                note: '在播放页显示快速下载入口'
+            },
+            {
+                key: 'fab_position',
+                type: 'select',
+                label: '按钮位置',
+                options: [
+                    { label: '左下角', value: 'left' },
+                    { label: '右下角', value: 'right' }
+                ],
+                layout: 'between',
+                disabledIf: (data) => !data.show_quick_button
             },
             {
                 key: 'task_interval',

@@ -26,7 +26,6 @@ class ThemePanel {
         this.currentTheme = 'default';
         this.modal = modal;
         this.customThemes = [];
-        this.fabPosition = 'left';
         this.soundConfig = { enabled: false, volume: 50, selected: 'default', files: [] };
         this.AUDIO_LIMIT_MB = 10;
         this.currentPreviewAudio = null;
@@ -58,12 +57,6 @@ class ThemePanel {
                     if (res.sound_enabled !== undefined) this.soundConfig.enabled = res.sound_enabled;
                     if (res.sound_volume !== undefined) this.soundConfig.volume = Math.round(res.sound_volume * 100);
                     if (res.sound_selected) this.soundConfig.selected = res.sound_selected;
-                    resolve();
-                });
-            }),
-            new Promise((resolve) => {
-                chrome.storage.local.get(['fab_position'], (res) => {
-                    this.fabPosition = res.fab_position === 'right' ? 'right' : 'left';
                     resolve();
                 });
             }),
@@ -171,34 +164,6 @@ class ThemePanel {
         themeGrid.appendChild(addBtn);
         appearanceSection.appendChild(themeGrid);
         form.appendChild(appearanceSection);
-        const fabSection = DOM.create('div', 'ud-settings-section');
-
-        fabSection.appendChild(DOM.create('div', 'ud-form-header', '下载按钮'));
-        fabSection.appendChild(DOM.createLabelGroup({
-            label: '按钮位置',
-            note: '需先在「通用」中开启「视频页面显示下载按钮」',
-        }));
-
-        const posList = DOM.create('div', 'ud-radio-group-horizontal');
-        const renderPosList = () => {
-            posList.innerHTML = '';
-            [['left', '左下角'], ['right', '右下角']].forEach(([value, label]) => {
-                posList.appendChild(DOM.createRadioRow({
-                    label: label,
-                    value: value,
-                    checked: this.fabPosition === value,
-                    onSelect: (v) => {
-                        this.fabPosition = v;
-                        chrome.storage.local.set({ fab_position: v });
-                        renderPosList();
-                    },
-                }));
-            });
-        };
-
-        renderPosList();
-        fabSection.appendChild(posList);
-        form.appendChild(fabSection);
         const soundSection = DOM.create('div', 'ud-settings-section');
 
         soundSection.appendChild(DOM.create('div', 'ud-form-header', '任务完成音效'));

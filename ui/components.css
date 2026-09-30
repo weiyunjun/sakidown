@@ -1615,23 +1615,6 @@ input:checked + .ud-slider:before {
     flex-shrink: 0;
 }
 
-/* [变体] 横向并排的选项组 (等宽平分一行) */
-.ud-radio-group-horizontal {
-    display: flex;
-    gap: 12px;
-}
-
-.ud-radio-group-horizontal .ud-radio-wrapper {
-    flex: 1;
-    min-width: 0;
-    margin-bottom: 0;
-}
-
-/* 并排单元格较窄，不再预留右侧悬浮操作按钮的空间 */
-.ud-radio-group-horizontal .ud-radio-row {
-    padding-right: 12px;
-}
-
 /* =================================================================
    12. 滑块组件 (Slider)
    ================================================================= */

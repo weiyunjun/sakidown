@@ -3,7 +3,7 @@
  * @description 通用设置面板控制器 (General Settings Panel)
  * * 核心职责 (Core Responsibilities):
  * 1. 配置管理 (Configuration Management):
- * - 管理全局通用参数：`task_interval` (任务间隔) 和 `show_quick_button` (视频页悬浮球)。
+ * - 管理全局通用参数：`task_interval` (任务间隔)、`show_quick_button` (视频页悬浮球) 和 `fab_position` (悬浮球位置)。
  * - 实现配置的异步读取 (`chrome.storage.local.get`) 与持久化保存 (`_saveConfig`)。
  * * 2. 表单渲染 (Form Rendering):
  * - 基于 `DOMUtils` 封装表单组件，实现标准化的 Label + Control 布局。
@@ -19,12 +19,12 @@ class GeneralPanel {
     constructor(headerContainer, contentContainer, modal) {
         this.dom = { header: headerContainer, content: contentContainer };
         this.modal = modal;
-        this.config = { task_interval: 5, show_quick_button: true };
+        this.config = { task_interval: 5, show_quick_button: true, fab_position: 'left' };
     }
 
     async render() {
         await new Promise((resolve) => {
-            const keys = ['task_interval', 'show_quick_button'];
+            const keys = ['task_interval', 'show_quick_button', 'fab_position'];
 
             chrome.storage.local.get(keys, (res) => {
                 if (res.task_interval !== undefined) {
@@ -33,6 +33,10 @@ class GeneralPanel {
 
                 if (res.show_quick_button !== undefined) {
                     this.config.show_quick_button = res.show_quick_button;
+                }
+
+                if (res.fab_position !== undefined) {
+                    this.config.fab_position = res.fab_position;
                 }
 
                 resolve();
