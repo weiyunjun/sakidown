@@ -169,6 +169,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
     applyFabPosition(document.getElementById(FAB_HOST_ID), changes.fab_position.newValue);
 });
 window.addEventListener('message', (event) => {
+    if (event.origin !== window.location.origin) return;
     if (event.source !== window || !event.data || event.data.source !== 'SakiDown') return;
     const data = event.data;
 
